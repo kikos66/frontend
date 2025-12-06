@@ -69,7 +69,7 @@ const Navbar = () => {
             {/* Login Button */}
             <button className="hidden md:flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200">
               
-              <a href='/Login'><span><User size={20} /></span></a>
+              <a href='/Login'><User size={20} /></a>
               <a href='/Login'>Login</a>
               
             </button>
@@ -89,18 +89,15 @@ const Navbar = () => {
           <div className="md:hidden mt-4 pb-4 border-t pt-4">
             <div className="flex flex-col space-y-4">
               <button className="text-left font-medium text-gray-700 hover:text-blue-600 py-2">
-                About Us
+                <a href='/'>Home</a>
+              </button>
+              <button className="text-left font-medium text-gray-700 hover:text-blue-600 py-2">
+                <a href='/AboutUs'>About us</a>
               </button>
               <button className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 py-2">
-                <User size={18} />
-                <span>Login / Register</span>
+                <a href='/Login'><User size={20} /></a>
+                <a href='/Login'>Login</a>
               </button>
-              <div className="space-y-2 pt-2">
-                <a href="#" className="block text-gray-600 hover:text-blue-600">Home</a>
-                <a href="#" className="block text-gray-600 hover:text-blue-600">Categories</a>
-                <a href="#" className="block text-gray-600 hover:text-blue-600">Deals</a>
-                <a href="#" className="block text-gray-600 hover:text-blue-600">Contact</a>
-              </div>
             </div>
           </div>
         )}
