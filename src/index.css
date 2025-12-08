@@ -1,6 +1,82 @@
 @import "tailwindcss";
 
 html, body {
-  min-height: 100vh; /* This is often preferred for full viewport height */
+  min-height: 100vh;
 }
 
+.label {
+  display: block;
+  font-size: 0.875rem;       
+  line-height: 1.5rem;       
+  font-weight: 500;           
+  color: #111827;  
+  text-align: center; 
+}
+
+  @media (min-width: 640px) {
+    .label {
+      text-align: left; 
+    }
+  }
+
+.input-container {
+  display: flex;
+  align-items: center;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  padding-left: 0.75rem;
+  outline: 1px solid #D1D5DB;
+  outline-offset: -1px;
+}
+
+  .input-container:focus-within {
+    outline-width: 2px;
+    outline-offset: -2px;
+    outline-color: #4F46E5;
+  }
+
+.input-field {
+  display: block;
+  min-width: 0;
+  flex-grow: 1;
+  padding: 0.375rem 0.75rem 0.375rem 0.25rem;
+  font-size: 1rem;
+  color: #111827;
+  outline: none;
+}
+
+  .input-field::placeholder {
+    color: #9CA3AF;
+  }
+
+  @media (min-width: 640px) {
+    .input-field {
+      font-size: 0.875rem;
+      line-height: 1.5rem;
+    }
+  }
+
+.button-navbar-mobile {
+  text-align: left;
+  font-weight: 500;
+  color: #374151;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  cursor: pointer;
+  transition: color 200ms;
+}
+
+  .button-navbar-mobile:hover {
+    color: #2563EB;
+  }
+
+.button-navbar {
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: color 200ms;
+}
+
+  .button-navbar:hover {
+    color: #2563EB;
+  }

@@ -1,9 +1,28 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
-//Ikony zobranÃ© z https://heroicons.com/
+//Ikony zobrane z https://heroicons.com/
 function Login() {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+    
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState('');
+    const [error, setError] = useState("");
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+
+        try {
+            await login(email, password);
+            navigate("/Profile");
+        } catch (e) {
+            setError("Invalid email or password.");
+        }
+    };
 
     const handleMouseDown = () => {
         setShowPassword(true);
@@ -28,31 +47,65 @@ function Login() {
     return (
         <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
             <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-                <form class="space-y-12">
+                {error && (
+                    <p className="text-red-600 text-center mb-4 font-medium">
+                    {error}
+                    </p>
+                )}
+                <form class="space-y-12" onSubmit={handleSubmit}>
                     <div class="border-b border-gray-900/10 pb-12">
                         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                            <div class="sm:col-span-4 mx-auto"> <label for="email" class="block text-sm/6 font-medium text-gray-900 text-center sm:text-left">Email</label> <div class="mt-2">
-                                    <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
-                                        <input id="email" type="text" name="email" placeholder="Your email" class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" />
+                            <div class="sm:col-span-4 mx-auto"> 
+                                <label htmlFor="email" class="label">Email</label>
+                                    <div class="mt-2">
+                                        <div class="input-container">
+                                            <input value={email} 
+                                                onChange={(e) => setEmail(e.target.value)} 
+                                                id="email"
+                                                type="email" 
+                                                name="email" 
+                                                placeholder="Your email" 
+                                                class="input-field" 
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="sm:col-span-4 mx-auto"> 
+                                <label htmlFor="password" class="label">Password</label>
+                                    <div class="mt-2">
+                                        <div class="relative flex input-container">
+                                            <input value={password} 
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                id="password" 
+                                                type={togglePasswordType} 
+                                                name="password" 
+                                                placeholder="Your password" 
+                                                class="input-field" 
+                                                required
+                                            />
+                                            <button type="button" 
+                                                onMouseDown={handleMouseDown} 
+                                                onMouseUp={handleMouseUp} 
+                                                onTouchStart={handleMouseDown} 
+                                                onTouchEnd={handleMouseUp} 
+                                                className="absolute right-0 h-full px-3 text-lg text-gray-500 hover:text-gray-800 transition duration-150 focus:outline-none" 
+                                                aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                                                {icon} 
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="sm:col-span-4 mx-auto"> <label for="password" class="block text-sm/6 font-medium text-gray-900 text-center sm:text-left">Password</label> <div class="mt-2">
-                                    <div class="relative flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
-                                        <input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type={togglePasswordType} name="password" placeholder="Your password" class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" />
-                                        <button type="button" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleMouseDown} onTouchEnd={handleMouseUp} className="absolute right-0 h-full px-3 text-lg text-gray-500 hover:text-gray-800 transition duration-150 focus:outline-none" aria-label={showPassword ? 'Hide password' : 'Show password'}>
-                                            {icon} 
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="mt-6 flex items-center justify-center sm:justify-end gap-x-6"> 
-                            <button type="submit" class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Login</button>
+                            <button type="submit" 
+                            class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Login</button>
                         </div>
                     </div>
                 </form>
-                <a href="/Register" className="font-semibold text-indigo-400 hover:text-indigo-300">Don't have an account yet?</a>
+                <a href="/Register"
+                    className="font-semibold text-indigo-400 hover:text-indigo-300">Don't have an account yet?
+                </a>
             </div>
         </div>
     )
