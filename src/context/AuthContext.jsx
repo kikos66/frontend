@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
             setCurrentUser(data);
         } catch (error) {
             console.error("Failed to fetch current user data:", error);
-            await logout(); 
+            setCurrentUser(null); 
         }
     };
     
@@ -45,12 +45,18 @@ export function AuthProvider({ children }) {
         setCurrentUser(null);
     };
 
+    const updateUser = (userData) => {
+        setCurrentUser(userData);
+    };
+
     const value = {
         isAuthenticated,
         currentUser,
         loading,
         login,
         logout,
+        updateUser,
+        fetchCurrentUser
     };
 
     return (

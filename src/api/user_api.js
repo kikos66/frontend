@@ -14,9 +14,9 @@ const UserAPI = {
     return res.data;
   },
 
-  editUserData: async () => {
-    const res = await AxiosHelper.post("/users/user/edit", userData);
-    return res.status;
+  editUserData: async(userData = null) => {
+    const res = await AxiosHelper.put("/users/edit", userData);
+    return res.data;
   }
 
 };

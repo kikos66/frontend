@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Edit } from 'lucide-react';
 
 function Profile() {
-  const { isAuthenticated } = useAuth(); 
+  const {isAuthenticated, updateUser, fetchCurrentUser} = useAuth(); 
     const navigate = useNavigate();
     useEffect(() => {
         if (!isAuthenticated) {
@@ -56,10 +56,19 @@ function Profile() {
         setError("");
 
         try {
-        await UserAPI.editUserData(formData);
-        navigate("/user");
+            const res = await UserAPI.editUserData(formData);
+            if (res && res.accessToken) {
+                console.log("Saving new accessToken:", res.accessToken.substring(0, 10) + '...');
+                localStorage.setItem("accessToken", res.accessToken);
+            }
+            updateUser(res.user);
+            await fetchCurrentUser();
+            setUser(res.user); 
+            setFormData({ email: res.user.email || '' }); 
+            
         } catch (e) {
-        setError("Invalid form data.");
+            console.error("Profile edit failed:", e);
+            setError("Invalid form data or failed to update profile.");
         }
     };
 
@@ -68,7 +77,6 @@ function Profile() {
 
     return (
         <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-            <form>
                 <h1 className="text-3xl font-bold mb-6 text-green-600">
                     {userIdToFetch ? `Profile for User ID: ${userIdToFetch}` : 'Your Profile'}
                 </h1>
@@ -76,21 +84,17 @@ function Profile() {
                     <strong>Email:</strong> {user.email}
                 </p>
                 {!userIdToFetch && (
-                <>
-                    {/*Input field*/}
-                    <input onChange={handleChange} value={formData.email}
+                <form onSubmit={handleSubmit}>
+                    <input  value={formData.email} onChange={handleChange}
                         id="email" type="email" name="email" placeholder="Update email" required
                         className="w-full p-2 border border-gray-300 rounded-md mb-4"
                     />
-
-                    {/*Button*/}
                     <button type="submit" 
                         className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition">
                         Edit Profile
                     </button>
-                </>
+                </form>
                 )}
-            </form>
         </div>
     );
     
