@@ -17,6 +17,11 @@ const UserAPI = {
   editUserData: async(userData = null) => {
     const res = await AxiosHelper.put("/users/edit", userData);
     return res.data;
+  },
+
+  deleteUser: async() => {
+    const res = await AxiosHelper.post("/users/delete");
+    return res.data;
   }
 
 };

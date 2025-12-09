@@ -80,3 +80,7 @@ html, body {
   .button-navbar:hover {
     color: #2563EB;
   }
+
+.margin-top {
+  margin-top: 0.5rem;
+}
