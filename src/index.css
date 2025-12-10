@@ -84,3 +84,30 @@ html, body {
 .margin-top {
   margin-top: 0.5rem;
 }
+
+.my-button {
+  background-color: #16a34a;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem; 
+  transition: all 150ms ease; 
+}
+
+  .my-button:hover {
+    background-color: #15803d;
+  }
+
+.password-show-element {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  font-size: 1.125rem;
+  color: #6b7280;
+  transition: all 150ms ease;
+}
+
+  .password-show-element:hover {
+    color: #1f2933;
+  }

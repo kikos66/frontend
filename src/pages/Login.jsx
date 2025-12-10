@@ -89,7 +89,7 @@ function Login() {
                                                 onMouseUp={handleMouseUp} 
                                                 onTouchStart={handleMouseDown} 
                                                 onTouchEnd={handleMouseUp} 
-                                                className="absolute right-0 h-full px-3 text-lg text-gray-500 hover:text-gray-800 transition duration-150 focus:outline-none" 
+                                                className="password-show-element" 
                                                 aria-label={showPassword ? 'Hide password' : 'Show password'}>
                                                 {icon} 
                                             </button>
@@ -99,7 +99,7 @@ function Login() {
                         </div>
                         <div class="mt-6 flex items-center justify-center sm:justify-end gap-x-6"> 
                             <button type="submit" 
-                            class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Login</button>
+                            class="my-button">Login</button>
                         </div>
                     </div>
                 </form>

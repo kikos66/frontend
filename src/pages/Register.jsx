@@ -85,7 +85,7 @@ function Register() {
                                 <div class="sm:col-span-4 mx-auto"> <label for="password" class="label">Password</label> <div class="mt-2">
                                         <div class="relative flex input-container">
                                             <input value={formData.password} onChange={handleChange} id="password" type={togglePasswordType} name="password" placeholder="Your password" class="input-field" required/>
-                                            <button type="button" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleMouseDown} onTouchEnd={handleMouseUp} className="absolute right-0 h-full px-3 text-lg text-gray-500 hover:text-gray-800 transition duration-150 focus:outline-none" aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                                            <button type="button" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleMouseDown} onTouchEnd={handleMouseUp} className="password-show-element" aria-label={showPassword ? 'Hide password' : 'Show password'}>
                                                 {icon} 
                                             </button>
                                         </div>
@@ -93,7 +93,7 @@ function Register() {
                                 </div>
                             </div>
                             <div class="mt-6 flex items-center justify-center sm:justify-end gap-x-6"> 
-                                <button type="submit" class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Register</button>
+                                <button type="submit" class="my-button">Register</button>
                             </div>
                         </div>
                     </form>

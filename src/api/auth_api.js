@@ -3,6 +3,7 @@ import AxiosHelper from "./axios_helper.js"
 const AuthAPI = {
   login: async (email, password) => {
     const res = await AxiosHelper.post("/auth/login", { email, password });
+    console.log(res.data);
     localStorage.setItem("accessToken", res.data.accessToken); 
     return res.data;
   },

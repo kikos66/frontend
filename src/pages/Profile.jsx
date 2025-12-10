@@ -109,7 +109,7 @@ function Profile() {
                             className="w-full p-2 border border-gray-300 rounded-md mb-4"
                         />
                         <button type="submit" 
-                            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition">
+                            className="my-button">
                             Edit Profile
                         </button>
                     </form>
