@@ -90,7 +90,7 @@ const Navbar = () => {
             </div>
             ) : (
               
-              <div classname = "ml-3">
+              <div className = "ml-3">
                 <button className="hidden md:flex items-center space-x-2 button-navbar">
                   <a href='/Login'><User size={20} /></a>
                   <a href='/Login'>Login</a>

@@ -45,43 +45,43 @@ function Login() {
     </svg>;
 
     return (
-        <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-            <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 {error && (
                     <p className="text-red-600 text-center mb-4 font-medium">
                     {error}
                     </p>
                 )}
-                <form class="space-y-12" onSubmit={handleSubmit}>
-                    <div class="border-b border-gray-900/10 pb-12">
-                        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                            <div class="sm:col-span-4 mx-auto"> 
-                                <label htmlFor="email" class="label">Email</label>
-                                    <div class="mt-2">
-                                        <div class="input-container">
+                <form className="space-y-12" onSubmit={handleSubmit}>
+                    <div className="border-b border-gray-900/10 pb-12">
+                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                            <div className="sm:col-span-4 mx-auto"> 
+                                <label htmlFor="email" className="label">Email</label>
+                                    <div className="mt-2">
+                                        <div className="input-container">
                                             <input value={email} 
                                                 onChange={(e) => setEmail(e.target.value)} 
                                                 id="email"
                                                 type="email" 
                                                 name="email" 
                                                 placeholder="Your email" 
-                                                class="input-field" 
+                                                className="input-field" 
                                                 required
                                             />
                                         </div>
                                     </div>
                             </div>
-                            <div class="sm:col-span-4 mx-auto"> 
-                                <label htmlFor="password" class="label">Password</label>
-                                    <div class="mt-2">
-                                        <div class="relative flex input-container">
+                            <div className="sm:col-span-4 mx-auto"> 
+                                <label htmlFor="password" className="label">Password</label>
+                                    <div className="mt-2">
+                                        <div className="relative flex input-container">
                                             <input value={password} 
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 id="password" 
                                                 type={togglePasswordType} 
                                                 name="password" 
                                                 placeholder="Your password" 
-                                                class="input-field" 
+                                                className="input-field" 
                                                 required
                                             />
                                             <button type="button" 
@@ -97,9 +97,9 @@ function Login() {
                                     </div>
                                 </div>
                         </div>
-                        <div class="mt-6 flex items-center justify-center sm:justify-end gap-x-6"> 
+                        <div className="mt-6 flex items-center justify-center sm:justify-end gap-x-6"> 
                             <button type="submit" 
-                            class="my-button">Login</button>
+                            className="my-button">Login</button>
                         </div>
                     </div>
                 </form>

@@ -65,26 +65,26 @@ function Register() {
         </svg>;
     
         return (
-            <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-                <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form class="space-y-12" onSubmit={handleSubmit}>
-                        <div class="border-b border-gray-900/10 pb-12">
-                            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                <div class="sm:col-span-4 mx-auto"> <label for="email" class="label">Email</label> <div class="mt-2">
-                                        <div class="input-container">
-                                            <input onChange={handleChange} value={formData.email} id="email" type="email" name="email" placeholder="Your email" class="input-field" required/>
+            <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+                <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                    <form className="space-y-12" onSubmit={handleSubmit}>
+                        <div className="border-b border-gray-900/10 pb-12">
+                            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                <div className="sm:col-span-4 mx-auto"> <label htmlFor="email" className="label">Email</label> <div className="mt-2">
+                                        <div className="input-container">
+                                            <input onChange={handleChange} value={formData.email} id="email" type="email" name="email" placeholder="Your email" className="input-field" required/>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="sm:col-span-4 mx-auto"> <label for="username" class="label">Username</label> <div class="mt-2">
-                                        <div class="input-container">
-                                            <input onChange={handleChange} value={formData.username} id="username" type="text" name="username" placeholder="Your username" class="input-field" required/>
+                                <div className="sm:col-span-4 mx-auto"> <label htmlFor="username" className="label">Username</label> <div className="mt-2">
+                                        <div className="input-container">
+                                            <input onChange={handleChange} value={formData.username} id="username" type="text" name="username" placeholder="Your username" className="input-field" required/>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="sm:col-span-4 mx-auto"> <label for="password" class="label">Password</label> <div class="mt-2">
-                                        <div class="relative flex input-container">
-                                            <input value={formData.password} onChange={handleChange} id="password" type={togglePasswordType} name="password" placeholder="Your password" class="input-field" required/>
+                                <div className="sm:col-span-4 mx-auto"> <label htmlFor="password" className="label">Password</label> <div className="mt-2">
+                                        <div className="relative flex input-container">
+                                            <input value={formData.password} onChange={handleChange} id="password" type={togglePasswordType} name="password" placeholder="Your password" className="input-field" required/>
                                             <button type="button" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onTouchStart={handleMouseDown} onTouchEnd={handleMouseUp} className="password-show-element" aria-label={showPassword ? 'Hide password' : 'Show password'}>
                                                 {icon} 
                                             </button>
@@ -92,8 +92,8 @@ function Register() {
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-6 flex items-center justify-center sm:justify-end gap-x-6"> 
-                                <button type="submit" class="my-button">Register</button>
+                            <div className="mt-6 flex items-center justify-center sm:justify-end gap-x-6"> 
+                                <button type="submit" className="my-button">Register</button>
                             </div>
                         </div>
                     </form>
