@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import useAuth from "./hooks/useAuth"; 
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Search, User, ShoppingCart, Menu, X } from 'lucide-react';
+import { Search, User, ShoppingCart, Menu, X, Plus } from 'lucide-react';
 import { useCart } from './context/CartContext'
 
 const Navbar = () => {
@@ -49,7 +49,14 @@ const Navbar = () => {
 
             <div className="hidden md:flex items-center space-x-3">
               <NavLink to="/" className="button-navbar" end>Home</NavLink>
+              {isAuthenticated && (
+                <NavLink to="/add-listing" className="button-navbar flex items-center gap-1">
+                <Plus size={16}/> Add Listing
+                </NavLink>
+              )}
             </div>
+
+            
           </div>
 
           {/* Center */}

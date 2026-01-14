@@ -9,6 +9,7 @@ import Profile from './pages/Profile'
 import CartPage from './pages/CartPage'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
+import AddListing from './pages/AddListing'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/profile" element={<Profile/>} />
                 <Route path="/profile/:id" element={<Profile/>} />
                 <Route path="/cart" element={<CartPage/>} />
+                <Route path="/add-listing" element={<AddListing/>} />
               </Routes>
             </main>
             <Footer />
