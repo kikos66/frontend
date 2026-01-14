@@ -7,8 +7,9 @@ const AxiosHelper = axios.create({
 
 AxiosHelper.interceptors.request.use((req) => {
     const token = localStorage.getItem('accessToken');
-    if (token)
+    if (token) {
         req.headers.Authorization =  `Bearer ${token}`;
+    }
     return req;
 });
 
@@ -32,9 +33,9 @@ AxiosHelper.interceptors.response.use(
         return AxiosHelper(original); 
       } catch (e) {
         localStorage.removeItem("accessToken");
+        window.location.href = "/login";
       }
     }
-
     return Promise.reject(err);
   }
 );

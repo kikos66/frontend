@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Edit } from 'lucide-react';
 
 function Profile() {
-  const {isAuthenticated, updateUser, fetchCurrentUser, logout} = useAuth(); 
+    const {isAuthenticated, updateUser, fetchCurrentUser, logout} = useAuth(); 
     const navigate = useNavigate();
     useEffect(() => {
         if (!isAuthenticated) {
@@ -57,8 +57,7 @@ function Profile() {
 
         try {
             const res = await UserAPI.editUserData(formData);
-            if(res.status == "201")
-            {
+            if(res.status == "201") {
                 if (res && res.accessToken) {
                     localStorage.setItem("accessToken", res.accessToken);
                 }
@@ -78,12 +77,11 @@ function Profile() {
     const handleDelete = async (e) => {
         e.preventDefault();
         setError("");
-
         try {
             const res = await UserAPI.deleteUser();
-            if(res.status == "201")
+            if(res.status == "201") {
                 logout();
-            
+            }
         } catch (e) {
             console.error("Profile delete failed:", e);
             setError("Invalid form data or failed to delete profile.");
@@ -99,7 +97,7 @@ function Profile() {
                     {userIdToFetch ? `Profile for User ID: ${userIdToFetch}` : 'Your Profile'}
                 </h1>
                 <p className="text-lg">
-                    <strong>Email:</strong> {user.email}
+                    <strong>Email:</strong> {user?.email}
                 </p>
                 {!userIdToFetch && (
                 <div>

@@ -4,39 +4,35 @@ import AuthAPI from '../api/auth_api';
 import UserAPI from '../api/user_api';
 
 export function AuthProvider({ children }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('accessToken'));
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const fetchCurrentUser = async () => {
-        try {
-            const data = await UserAPI.getUserData();
-            setCurrentUser(data);
-        } catch (error) {
-            console.error("Failed to fetch current user data:", error);
-            setCurrentUser(null); 
-        }
+        const data = await UserAPI.getUserData();
+        setCurrentUser(data);
     };
     
     useEffect(() => {
-        if (isAuthenticated && !currentUser) {
-            fetchCurrentUser();
-        }
-    }, [isAuthenticated]);
+        const init = async () => {
+            if (localStorage.getItem("accessToken")) {
+                try {
+                    await fetchCurrentUser();
+                    setIsAuthenticated(true);
+                } catch {
+                    localStorage.removeItem("accessToken");
+                    setIsAuthenticated(false);
+                }
+            }
+            setLoading(false);
+        };
+        init();
+    }, []);
 
     const login = async (email, password) => {
-        setLoading(true);
-        try {
-            await AuthAPI.login(email, password);
-            setIsAuthenticated(true);
-            await fetchCurrentUser();
-        } catch (error) {
-            setIsAuthenticated(false);
-            setCurrentUser(null);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
+        await AuthAPI.login(email, password);
+        setIsAuthenticated(true);
+        await fetchCurrentUser();
     };
 
     const logout = async () => {
@@ -55,8 +51,8 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
-        updateUser,
-        fetchCurrentUser
+        fetchCurrentUser,
+        updateUser: setCurrentUser,
     };
 
     return (

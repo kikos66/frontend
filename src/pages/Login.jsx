@@ -18,7 +18,7 @@ function Login() {
 
         try {
             await login(email, password);
-            navigate("/Profile");
+            navigate("/profile");
         } catch (e) {
             setError("Invalid email or password.");
         }
@@ -52,7 +52,7 @@ function Login() {
                     {error}
                     </p>
                 )}
-                <form className="space-y-12" onSubmit={handleSubmit}>
+                <form className="space-y-6" onSubmit={handleSubmit}>
                     <div className="border-b border-gray-900/10 pb-12">
                         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div className="sm:col-span-4 mx-auto"> 
@@ -97,13 +97,12 @@ function Login() {
                                     </div>
                                 </div>
                         </div>
-                        <div className="mt-6 flex items-center justify-center sm:justify-end gap-x-6"> 
-                            <button type="submit" 
-                            className="my-button">Login</button>
+                        <div className="flex items-center justify-end">
+                            <button type="submit" className="my-button">Login</button>
                         </div>
                     </div>
                 </form>
-                <a href="/Register"
+                <a href="/register"
                     className="font-semibold text-indigo-400 hover:text-indigo-300">Don't have an account yet?
                 </a>
             </div>

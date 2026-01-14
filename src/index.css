@@ -1,7 +1,38 @@
 @import "tailwindcss";
 
-html, body {
+:root {
+  --army-900: #0b2e13;
+  --army-800: #173f22;
+  --army-700: #235b30;
+  --army-600: #2f6b3a;
+  --army-500: #4c8b58;
+  --muted: #f3f4f6;
+  --surface: #f8faf7;
+  --accent: #d8e6d2;
+}
+
+
+html, body, #root {
+  height: 100%;
   min-height: 100vh;
+  background-color: var(--surface);
+}
+
+.bg-primary {
+  background-color: var(--army-600); }
+.text-primary {
+  color: var(--army-600);
+}
+.btn-primary {
+  background-color: var(--army-600);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(47, 107, 58, .12);
 }
 
 .label {
@@ -32,7 +63,7 @@ html, body {
   .input-container:focus-within {
     outline-width: 2px;
     outline-offset: -2px;
-    outline-color: #4F46E5;
+    outline-color: var(--army-600);
   }
 
 .input-field {
@@ -67,7 +98,7 @@ html, body {
 }
 
   .button-navbar-mobile:hover {
-    color: #2563EB;
+    color: var(--army-600);
   }
 
 .button-navbar {
@@ -78,7 +109,7 @@ html, body {
 }
 
   .button-navbar:hover {
-    color: #2563EB;
+    color: var(--army-600);
   }
 
 .margin-top {
@@ -86,7 +117,7 @@ html, body {
 }
 
 .my-button {
-  background-color: #16a34a;
+  background-color: var(--army-600);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.375rem; 
@@ -94,7 +125,7 @@ html, body {
 }
 
   .my-button:hover {
-    background-color: #15803d;
+    background-color: var(--army-700);
   }
 
 .password-show-element {
@@ -111,3 +142,10 @@ html, body {
   .password-show-element:hover {
     color: #1f2933;
   }
+
+.card {
+  background:white; 
+  border-radius:0.5rem; 
+  box-shadow:0 6px 18px rgba(16,24,40,0.06); 
+  padding: 1rem 
+}
