@@ -18,14 +18,14 @@ export default function CartPage(){
                 <li key={item.id} className="flex justify-between py-2 border-b">
                     <div>{item.name}</div>
                     <div className="flex items-center gap-3">
-                        <div>${item.price?.toFixed(2) ?? '—'}</div>
+                        <div>€{item.price?.toFixed(2) ?? '—'}</div>
                         <button className="text-sm text-red-600" onClick={()=>removeFromCart(item.id)}>Remove</button>
                     </div>
                 </li>
                 ))}
             </ul>
             <div className="mt-4 flex justify-between items-center">
-                <strong>Total: ${total.toFixed(2)}</strong>
+                <strong>Total: €{total.toFixed(2)}</strong>
                 <div>
                     <button className="btn-primary mr-2">Checkout</button>
                     <button className="text-sm" onClick={()=>clearCart()}>Clear</button>

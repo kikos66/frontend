@@ -10,7 +10,7 @@ export default function Footer(){
                     <div className="text-sm text-gray-600">Quality military surplus since 2026</div>
                 </div>
                 <div className="flex items-center space-x-4 text-sm">
-                    <Link to="/about">AboutUS</Link>
+                    <Link to="/about">About Us</Link>
                     <a href="#" onClick={(e)=>e.preventDefault()}>Support</a>
                     <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a>
                 </div>

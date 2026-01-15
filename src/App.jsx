@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import Home from './pages/Home'
@@ -7,9 +7,17 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
 import CartPage from './pages/CartPage'
+import AboutUs from './pages/AboutUs'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import AddListing from './pages/AddListing'
+import useAuth from './hooks/useAuth'
+
+function ProtectedRoute({ children }) {
+  const { isAuthenticated } = useAuth()
+
+  return isAuthenticated ? children : <Navigate to="/login" />
+}
 
 function App() {
   return (
@@ -23,10 +31,18 @@ function App() {
                 <Route path="/" element={<Home/>} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="/register" element={<Register/>} />
+                <Route path="/about" element={<AboutUs/>} />
                 <Route path="/profile" element={<Profile/>} />
                 <Route path="/profile/:id" element={<Profile/>} />
                 <Route path="/cart" element={<CartPage/>} />
-                <Route path="/add-listing" element={<AddListing/>} />
+
+                <Route path="/add-listing"
+                  element={
+                    <ProtectedRoute>
+                      <AddListing />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </main>
             <Footer />
