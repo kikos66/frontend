@@ -39,7 +39,8 @@ function Home() {
 
 
                 const res = await axios.get(`http://localhost:8080/api/products?${params.toString()}`)
-                setProducts(res.data || [])
+                console.log('API response', res.data)
+                setProducts(Array.isArray(res.data) ? res.data : [])
             }catch(err){ setError('Could not load products') }
             finally{ setLoading(false) }
         }
@@ -123,7 +124,7 @@ function Home() {
                     <div className="text-red-500">{error}</div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {products.map(p => <ProductCard key={p.id} product={p} />)}
+                        {products.map(p => <ProductCard key={p.id} product={p} />)}
                     </div>
                 )}
             </section>

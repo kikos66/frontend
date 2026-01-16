@@ -12,6 +12,7 @@ import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import AddListing from './pages/AddListing'
 import useAuth from './hooks/useAuth'
+import ProductPage from './pages/ProductPage'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth()
@@ -35,6 +36,8 @@ function App() {
                 <Route path="/profile" element={<Profile/>} />
                 <Route path="/profile/:id" element={<Profile/>} />
                 <Route path="/cart" element={<CartPage/>} />
+                <Route path="/product" element={<ProductPage/>} />
+                <Route path="/product/:id" element={<ProductPage/>} />
 
                 <Route path="/add-listing"
                   element={

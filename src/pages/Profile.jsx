@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import UserAPI from '../api/user_api';
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from 'react-router-dom';
-import { Edit } from 'lucide-react';
+import AxiosHelper from '../api/axios_helper';
 
 function Profile() {
     const {isAuthenticated, updateUser, fetchCurrentUser, logout} = useAuth(); 
@@ -19,6 +19,38 @@ function Profile() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [avatarFile, setAvatarFile] = useState(null);
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        setAvatarFile(file);
+    }
+    
+    const uploadAvatar = async () => {
+    console.log("UPLOAD CLICKED");
+
+    if (!avatarFile) {
+        console.warn("No avatar selected");
+        return;
+    }
+
+    console.log("Uploading file:", avatarFile);
+
+    const fd = new FormData();
+    fd.append('avatar', avatarFile);
+
+    try {
+        const res = await AxiosHelper.post(
+            '/users/me/avatar',
+            fd
+        );
+        console.log("Upload response:", res);
+
+        await fetchCurrentUser();
+    } catch (e) {
+        console.error("Upload failed:", e);
+    }
+};
 
     const userIdToFetch = id || null;
 
@@ -93,13 +125,29 @@ function Profile() {
 
     return (
         <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-                <h1 className="text-3xl font-bold mb-6 text-green-600">
-                    {userIdToFetch ? `Profile for User ID: ${userIdToFetch}` : 'Your Profile'}
-                </h1>
-                <p className="text-lg">
-                    <strong>Email:</strong> {user?.email}
-                </p>
-                {!userIdToFetch && (
+            <div className="mt-4">
+                <label className="label">Profile picture</label>
+                <div className="flex items-center gap-3">
+                    <img src={user?.profilePicture ? `/images/profiles/${user.profilePicture}` : '/placeholder.png'} alt="avatar" className="w-16 h-16 object-cover rounded-full" />
+                    <div>
+                    <input type="file" accept="image/*" onChange={handleAvatarChange} />
+                    <button
+                        type="button"
+                        onClick={uploadAvatar}
+                        className="my-button mt-2"
+                    >
+                        Upload avatar
+                    </button>
+                    </div>
+                </div>
+            </div>
+            <h1 className="text-3xl font-bold mb-6 text-green-600">
+                {userIdToFetch ? `Profile for User ID: ${userIdToFetch}` : 'Your Profile'}
+            </h1>
+            <p className="text-lg">
+                <strong>Email:</strong> {user?.email}
+            </p>
+            {!userIdToFetch && (
                 <div>
                     <form onSubmit={handleEdit}>
                         <input  value={formData.email} onChange={handleChange}
@@ -118,7 +166,7 @@ function Profile() {
                         </button>
                     </form>
                 </div>
-                )}
+            )}
         </div>
     );
     
