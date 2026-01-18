@@ -18,7 +18,16 @@ AxiosHelper.interceptors.response.use(
   async (err) => {
     const original = err.config;
 
-    if (err.response?.status === 401 && !original._retry) {
+    const isAuthEndpoint =
+      original.url.includes("/auth/login") ||
+      original.url.includes("/auth/register") ||
+      original.url.includes("/auth/refresh");
+
+    if (
+      err.response?.status === 401 &&
+      !original._retry &&
+      !isAuthEndpoint
+    ) {
       original._retry = true;
 
       try {
@@ -26,16 +35,19 @@ AxiosHelper.interceptors.response.use(
         const newToken = res.data.accessToken;
 
         localStorage.setItem("accessToken", newToken);
-        
-        AxiosHelper.defaults.headers.Authorization = `Bearer ${newToken}`; 
+
+        AxiosHelper.defaults.headers.Authorization = `Bearer ${newToken}`;
         original.headers.Authorization = `Bearer ${newToken}`;
 
-        return AxiosHelper(original); 
-      } catch (e) {
+        return AxiosHelper(original);
+      } catch (refreshErr) {
+        // refresh failed → logout
         localStorage.removeItem("accessToken");
         window.location.href = "/login";
+        return Promise.reject(refreshErr);
       }
     }
+
     return Promise.reject(err);
   }
 );

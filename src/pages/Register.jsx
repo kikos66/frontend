@@ -6,6 +6,7 @@ function Register() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [password, setPassword] = useState('');
+    const [error, setError] = useState("");
     
     const handleMouseDown = () => {
             setShowPassword(true);
@@ -29,24 +30,26 @@ function Register() {
         };
 
         const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(
+            e.preventDefault();
+            setError("");
+
+            try {
+                const response = await axios.post(
                 "http://localhost:8080/api/auth/register",
                 formData,
-                {
-                    headers: { "Content-Type": "application/json" }
+                { headers: { "Content-Type": "application/json" } }
+                );
+
+                navigate("/login");
+
+            } catch (err) {
+                if (err.response) {
+                // backend sent an error message
+                setError(err.response.data || "Registration failed.");
+                } else {
+                setError("Server unreachable.");
                 }
-            );
-            console.log(response.data); // User registered successfully
-            if (response.status === 201) {
-                navigate('/login');
-            } else {
-                navigate('/register');
             }
-        } catch (err) {
-            console.error(err.response?.data || err.message);
-        }
         };
 
         const togglePasswordType = showPassword ? 'text' : 'password';
@@ -64,6 +67,11 @@ function Register() {
         return (
             <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                    {error && (
+                        <p className="text-red-600 text-center mb-4 font-medium">
+                            {error}
+                        </p>
+                    )}
                     <form className="space-y-12" onSubmit={handleSubmit}>
                         <div className="border-b border-gray-900/10 pb-12">
                             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">

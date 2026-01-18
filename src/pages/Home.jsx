@@ -9,9 +9,7 @@ function useQuery(){
 
 function Home() {
     const q = useQuery()
-    const initialSearch = q.get('q') || ''
-    const navigate = useNavigate()
-
+    const search = q.get('search') || ''
 
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
@@ -19,54 +17,43 @@ function Home() {
 
 
     // filters
-    const [search, setSearch] = useState(initialSearch)
     const [category, setCategory] = useState('')
     const [condition, setCondition] = useState('')
     const [minPrice, setMinPrice] = useState('')
     const [maxPrice, setMaxPrice] = useState('')
 
-    useEffect(()=>{
+    useEffect(() => {
         const fetchProducts = async () => {
-            setLoading(true)
-            setError(null)
-            try{
-                const params = new URLSearchParams()
-                if(search) params.append('search', search)
-                if(category) params.append('category', category)
-                if(condition) params.append('condition', condition)
-                if(minPrice) params.append('minPrice', minPrice)
-                if(maxPrice) params.append('maxPrice', maxPrice)
+            try {
+            const params = new URLSearchParams()
+            if (search) params.append("search", search)
+            if (category) params.append("category", category)
+            if (condition) params.append("condition", condition)
+            if (minPrice) params.append("minPrice", minPrice)
+            if (maxPrice) params.append("maxPrice", maxPrice)
 
+            console.log("Fetching with:", params.toString())
 
-                const res = await axios.get(`http://localhost:8080/api/products?${params.toString()}`)
-                console.log('API response', res.data)
-                setProducts(Array.isArray(res.data) ? res.data : [])
-            }catch(err){ setError('Could not load products') }
-            finally{ setLoading(false) }
+            const res = await axios.get(
+                `http://localhost:8080/api/products?${params.toString()}`
+            )
+            setProducts(res.data)
+            } catch {
+            setError("Could not load products")
+            } finally {
+            setLoading(false)
+            }
         }
-    fetchProducts()
-    }, [search, category, condition, minPrice, maxPrice])
 
-    const handleApplyFilters = (e) => {
-    e?.preventDefault()
-        const params = new URLSearchParams()
-        if(search) params.append('q', search)
-        if(category) params.append('category', category)
-        navigate(`/?${params.toString()}`)
-    }
+        fetchProducts()
+    }, [search, category, condition, minPrice, maxPrice])
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Filters - left column */}
             <aside className="md:col-span-1 card">
                 <h3 className="font-semibold mb-3">Filters</h3>
-                <form onSubmit={handleApplyFilters} className="space-y-3">
-                    <div>
-                        <label className="label">Search</label>
-                        <input value={search} onChange={(e)=>setSearch(e.target.value)} className="input-field mt-2 w-full" placeholder="e.g. parka, backpack" />
-                    </div>
-
-
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-3">
                     <div>
                         <label className="label">Category</label>
                         <select value={category} onChange={(e)=>setCategory(e.target.value)} className="input-field mt-2 w-full">
@@ -101,9 +88,7 @@ function Home() {
                         </div>
                     </div>
 
-
                     <div className="flex gap-2">
-                        <button className="my-button" type="submit">Apply</button>
                         <button type="button" className="text-sm" onClick={()=>{setSearch(''); setCategory(''); setCondition(''); setMinPrice(''); setMaxPrice('')}}>Reset</button>
                     </div>
                 </form>

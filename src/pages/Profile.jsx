@@ -27,30 +27,30 @@ function Profile() {
     }
     
     const uploadAvatar = async () => {
-    console.log("UPLOAD CLICKED");
+        console.log("UPLOAD CLICKED");
 
-    if (!avatarFile) {
-        console.warn("No avatar selected");
-        return;
-    }
+        if (!avatarFile) {
+            console.warn("No avatar selected");
+            return;
+        }
 
-    console.log("Uploading file:", avatarFile);
+        console.log("Uploading file:", avatarFile);
 
-    const fd = new FormData();
-    fd.append('avatar', avatarFile);
+        const fd = new FormData();
+        fd.append('avatar', avatarFile);
 
-    try {
-        const res = await AxiosHelper.post(
-            '/users/me/avatar',
-            fd
-        );
-        console.log("Upload response:", res);
+        try {
+            const res = await AxiosHelper.post(
+                '/users/me/avatar',
+                fd
+            );
+            console.log("Upload response:", res);
 
-        await fetchCurrentUser();
-    } catch (e) {
-        console.error("Upload failed:", e);
-    }
-};
+            await fetchCurrentUser();
+        } catch (e) {
+            console.error("Upload failed:", e);
+        }
+    };
 
     const userIdToFetch = id || null;
 

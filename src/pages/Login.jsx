@@ -20,7 +20,9 @@ function Login() {
             await login(email, password);
             navigate("/profile");
         } catch (e) {
-            setError("Invalid email or password.");
+            setError(
+                e.response?.data || "Invalid email or password."
+            );
         }
     };
 
