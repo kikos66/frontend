@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import AxiosHelper from '../api/axios_helper'
 import useAuth from '../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
+import CommentAPI from '../api/comment_api';
 
 export default function ProductPage(){
   const { id } = useParams()
@@ -10,19 +11,73 @@ export default function ProductPage(){
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [files, setFiles] = useState([])
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
   const { currentUser, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
   const isOwner = isAuthenticated && currentUser?.id === product?.owner?.id
 
-  useEffect(()=>{ (async ()=>{
-    try{ const res = await AxiosHelper.get(`/products/${id}`); setProduct(res.data) }catch(e){ setError('Not found') } finally { setLoading(false)} })() },[id])
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await AxiosHelper.get(`/products/${id}`);
+        setProduct(res.data);
+      } catch (e) {
+        setError('Product not found');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [id]);
+
+  useEffect(() => {
+    (async () => {
+      if (!id) return;
+      try {
+        const data = await CommentAPI.fetchComments(id);
+        setComments(data);
+      } catch (e) {
+        console.error("Failed to load comments", e);
+      }
+    })();
+  }, [id]);
 
   const handleFiles = (e) => {
     const chosen = Array.from(e.target.files).slice(0, 5 - (product?.images?.length || 0))
     setFiles(chosen)
   }
   
+  const handlePostComment = async () => {
+    if (!newComment.trim()) return;
+    try {
+      const comment = await CommentAPI.postComment(product.id, newComment);
+      setComments(prev => [...prev, comment]);
+      setNewComment("");
+    } catch (e) {
+      console.error("Failed to post comment", e);
+    }
+  }
+
+  const handleEditComment = async (commentId, content) => {
+    try {
+      const updated = await CommentAPI.editComment(commentId, content);
+      setComments(prev => prev.map(c => c.id === commentId ? updated : c));
+    } catch (e) {
+      console.error("Failed to edit comment", e);
+    }
+  }
+
+  const handleDeleteComment = async (commentId) => {
+    if (!confirm("Delete this comment?")) return;
+    try {
+      await CommentAPI.deleteComment(commentId);
+      setComments(prev => prev.filter(c => c.id !== commentId));
+    } catch (e) {
+      console.error("Failed to delete comment", e);
+    }
+  }
+
   const upload = async () => {
     if(files.length===0) return
     const fd = new FormData()
@@ -50,38 +105,77 @@ export default function ProductPage(){
           ) : (
             <div className="h-96 bg-gray-100 flex items-center justify-center mb-3">No image</div>
           )}
-
           <div className="flex space-x-2">
             {images.map(img => (
               <img key={img.id} src={`/images/products/${img.filename}`} alt="" className="w-24 h-24 object-cover" />
             ))}
           </div>
+          <p className="mt-3">{product.description}</p>
+          <div className="font-bold text-xl mb-4">€{product.price?.toFixed(2)}</div>
+
+          {/* Comments Section */}
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-2">Comments</h2>
+
+            {comments.map(comment => (
+              <div key={comment.id} className="flex items-start gap-3 mb-3 p-2 bg-gray-50 rounded">
+                <img
+                  src={comment.user.profilePicture ? `/images/profiles/${comment.user.profilePicture}` : '/placeholder.png'}
+                  alt={comment.user.username}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <div className="flex-1">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">{comment.user.username}</span>
+                    {currentUser?.id === comment.user.id && (
+                      <div className="flex gap-2 text-sm">
+                        <button onClick={() => {
+                          const content = prompt("Edit your comment", comment.content);
+                          if (content !== null) handleEditComment(comment.id, content);
+                        }}>Edit</button>
+                        <button onClick={() => handleDeleteComment(comment.id)} className="text-red-500">Delete</button>
+                      </div>
+                    )}
+                  </div>
+                  <p>{comment.content}</p>
+                </div>
+              </div>
+            ))}
+
+            {isAuthenticated && (
+              <div className="mt-4 flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Write a comment..."
+                  className="flex-1 p-2 border rounded"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                />
+                <button onClick={handlePostComment} className="btn-primary">Post</button>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="p-4">
-          <p className="mb-4">{product.description}</p>
-          <div className="font-bold text-xl mb-4">€{product.price?.toFixed(2)}</div>
-          
-          {isOwner && (
-            <div>
-              <button
-                className="bg-red-600 text-white px-4 py-2 rounded"
-                onClick={async () => {
-                  if (!confirm("Delete this product?")) return;
-                  await AxiosHelper.delete(`/products/${product.id}`);
-                  navigate('/');
-                }}
-              >
-                Delete Listing
-              </button>
-              <label className="label">Add photos (max 5 total)</label>
-              <input type="file" accept="image/*" multiple onChange={handleFiles} />
-              <div className="mt-2">
-                <button className="btn-primary mr-2" onClick={upload}>Upload</button>
-              </div>
+        {isOwner && (
+          <div className="p-4">
+            <button
+              className="bg-red-600 text-white px-4 py-2 rounded mb-2"
+              onClick={async () => {
+                if (!confirm("Delete this product?")) return;
+                await AxiosHelper.delete(`/products/${product.id}`);
+                navigate('/');
+              }}
+            >
+              Delete Listing
+            </button>
+            <label className="label">Add photos (max 5 total)</label>
+            <input type="file" accept="image/*" multiple onChange={handleFiles} />
+            <div className="mt-2">
+              <button className="btn-primary mr-2" onClick={upload}>Upload</button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -28,25 +28,26 @@ function Profile() {
     }
     
     const uploadAvatar = async () => {
-        console.log("UPLOAD CLICKED");
 
         if (!avatarFile) {
             console.warn("No avatar selected");
             return;
         }
 
-        console.log("Uploading file:", avatarFile);
-
         const fd = new FormData();
         fd.append('avatar', avatarFile);
 
         try {
-            const res = await AxiosHelper.post(
-                '/users/me/avatar',
-                fd
-            );
-            console.log("Upload response:", res);
+            const res = await AxiosHelper.post('/users/me/avatar', fd);
+            const newFilename = res.data?.filename;
+            if (newFilename) {
+                setUser(prev => ({
+                    ...prev,
+                    profilePicture: newFilename
+                }));
+            }
 
+            setAvatarFile(null);
             await fetchCurrentUser();
         } catch (e) {
             console.error("Upload failed:", e);
@@ -137,7 +138,7 @@ function Profile() {
             <div className="mt-4">
                 <label className="label">Profile picture</label>
                 <div className="flex items-center gap-3">
-                    <img src={user?.profilePicture ? `/images/profiles/${user.profilePicture}` : '/placeholder.png'} alt="avatar" className="w-16 h-16 object-cover rounded-full" />
+                    <img src={user?.profilePicture ? `/images/profiles/${user.profilePicture}?t=${Date.now()}` : '/placeholder.png'} alt="avatar" className="w-16 h-16 object-cover rounded-full" />
                     <div>
                     <input type="file" accept="image/*" onChange={handleAvatarChange} />
                     <button
