@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import AxiosHelper from '../api/axios_helper'
 import useAuth from '../hooks/useAuth'
+import { useNavigate } from 'react-router-dom'
 
 export default function ProductPage(){
   const { id } = useParams()
@@ -9,7 +10,10 @@ export default function ProductPage(){
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [files, setFiles] = useState([])
-  const { isAuthenticated } = useAuth()
+  const { currentUser, isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+
+  const isOwner = isAuthenticated && currentUser?.id === product?.owner?.id
 
   useEffect(()=>{ (async ()=>{
     try{ const res = await AxiosHelper.get(`/products/${id}`); setProduct(res.data) }catch(e){ setError('Not found') } finally { setLoading(false)} })() },[id])
@@ -57,9 +61,19 @@ export default function ProductPage(){
         <div className="p-4">
           <p className="mb-4">{product.description}</p>
           <div className="font-bold text-xl mb-4">€{product.price?.toFixed(2)}</div>
-
-          {isAuthenticated && (
+          
+          {isOwner && (
             <div>
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded"
+                onClick={async () => {
+                  if (!confirm("Delete this product?")) return;
+                  await AxiosHelper.delete(`/products/${product.id}`);
+                  navigate('/');
+                }}
+              >
+                Delete Listing
+              </button>
               <label className="label">Add photos (max 5 total)</label>
               <input type="file" accept="image/*" multiple onChange={handleFiles} />
               <div className="mt-2">

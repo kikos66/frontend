@@ -20,6 +20,7 @@ function Profile() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [avatarFile, setAvatarFile] = useState(null);
+    const [myListings, setMyListings] = useState([]);
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
@@ -53,6 +54,14 @@ function Profile() {
     };
 
     const userIdToFetch = id || null;
+
+    useEffect(() => {
+        const fetchMyListings = async () => {
+            const res = await AxiosHelper.get("/products/mine");
+            setMyListings(res.data);
+        };
+        fetchMyListings();
+    }, []);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -167,6 +176,27 @@ function Profile() {
                     </form>
                 </div>
             )}
+            <h2 className="text-xl font-semibold mt-6">My Listings</h2>
+
+            <div className="grid grid-cols-2 gap-4 mt-3">
+                {myListings.map(p => (
+                    <div
+                    key={p.id}
+                    className="border rounded p-2 cursor-pointer hover:shadow"
+                    onClick={() => navigate(`/products/${p.id}`)}
+                    >
+                    <img
+                        src={
+                        p.images?.length
+                            ? `http://localhost:8080/images/products/${p.images[0].filename}`
+                            : "/placeholder.png"
+                        }
+                        className="h-32 w-full object-cover rounded"
+                    />
+                    <div className="font-medium mt-1">{p.name}</div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
     

@@ -9,6 +9,9 @@ export default function ProductCard({ product }){
             <div className="h-48 bg-gray-100 flex items-center justify-center mb-3">
                 <img src={thumbnailUrl} alt={product.name} className="object-cover h-full w-full" />
             </div>
+            {product.owner && (
+                <div className="text-xs text-gray-500">by {product.owner.username}</div>
+            )}
             <h3 className="font-semibold">{product.name}</h3>
             <p className="text-sm text-gray-600">{product.description}</p>
             <div className="mt-3 flex items-center justify-between">
