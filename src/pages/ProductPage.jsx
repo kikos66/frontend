@@ -12,12 +12,11 @@ export default function ProductPage(){
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [files, setFiles] = useState([])
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
   const { currentUser, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
   const isOwner = isAuthenticated && currentUser?.id === product?.owner?.id
+  const isModerator = currentUser && (currentUser.role === "ROLE_MODERATOR" || currentUser.role === "ROLE_ADMIN");
 
   useEffect(() => {
     (async () => {
@@ -47,36 +46,6 @@ export default function ProductPage(){
   const handleFiles = (e) => {
     const chosen = Array.from(e.target.files).slice(0, 5 - (product?.images?.length || 0))
     setFiles(chosen)
-  }
-  
-  const handlePostComment = async () => {
-    if (!newComment.trim()) return;
-    try {
-      const comment = await CommentAPI.postComment(product.id, newComment);
-      setComments(prev => [...prev, comment]);
-      setNewComment("");
-    } catch (e) {
-      console.error("Failed to post comment", e);
-    }
-  }
-
-  const handleEditComment = async (commentId, content) => {
-    try {
-      const updated = await CommentAPI.editComment(commentId, content);
-      setComments(prev => prev.map(c => c.id === commentId ? updated : c));
-    } catch (e) {
-      console.error("Failed to edit comment", e);
-    }
-  }
-
-  const handleDeleteComment = async (commentId) => {
-    if (!confirm("Delete this comment?")) return;
-    try {
-      await CommentAPI.deleteComment(commentId);
-      setComments(prev => prev.filter(c => c.id !== commentId));
-    } catch (e) {
-      console.error("Failed to delete comment", e);
-    }
   }
 
   const upload = async () => {
@@ -118,7 +87,7 @@ export default function ProductPage(){
 
         </div>
 
-        {isOwner && (
+        {(isOwner || isModerator) && (
           <div className="p-4">
             <button
               className="bg-red-600 text-white px-4 py-2 rounded mb-2"
