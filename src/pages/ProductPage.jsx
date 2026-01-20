@@ -4,6 +4,7 @@ import AxiosHelper from '../api/axios_helper'
 import useAuth from '../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
 import CommentAPI from '../api/comment_api';
+import CommentList from '../Components/CommentList';
 
 export default function ProductPage(){
   const { id } = useParams()
@@ -113,48 +114,8 @@ export default function ProductPage(){
           <p className="mt-3">{product.description}</p>
           <div className="font-bold text-xl mb-4">€{product.price?.toFixed(2)}</div>
 
-          {/* Comments Section */}
-          <div className="mt-6">
-            <h2 className="text-xl font-semibold mb-2">Comments</h2>
+          <CommentList productId={product.id} currentUser={currentUser} />
 
-            {comments.map(comment => (
-              <div key={comment.id} className="flex items-start gap-3 mb-3 p-2 bg-gray-50 rounded">
-                <img
-                  src={comment.user.profilePicture ? `/images/profiles/${comment.user.profilePicture}` : '/placeholder.png'}
-                  alt={comment.user.username}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold">{comment.user.username}</span>
-                    {currentUser?.id === comment.user.id && (
-                      <div className="flex gap-2 text-sm">
-                        <button onClick={() => {
-                          const content = prompt("Edit your comment", comment.content);
-                          if (content !== null) handleEditComment(comment.id, content);
-                        }}>Edit</button>
-                        <button onClick={() => handleDeleteComment(comment.id)} className="text-red-500">Delete</button>
-                      </div>
-                    )}
-                  </div>
-                  <p>{comment.content}</p>
-                </div>
-              </div>
-            ))}
-
-            {isAuthenticated && (
-              <div className="mt-4 flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Write a comment..."
-                  className="flex-1 p-2 border rounded"
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                />
-                <button onClick={handlePostComment} className="btn-primary">Post</button>
-              </div>
-            )}
-          </div>
         </div>
 
         {isOwner && (
