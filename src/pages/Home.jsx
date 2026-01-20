@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ProductCard from '../ProductCard'
-import axios from 'axios'
+import AxiosHelper from '../api/axios_helper';
 import { useLocation, useNavigate } from 'react-router-dom'
 
 function useQuery(){
@@ -10,10 +10,13 @@ function useQuery(){
 function Home() {
     const q = useQuery()
     const search = q.get('search') || ''
+    const nav = useNavigate();
 
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [page, setPage] = useState(0);
+    const [last, setLast] = useState(false);
 
 
     // filters
@@ -23,8 +26,12 @@ function Home() {
     const [maxPrice, setMaxPrice] = useState('')
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
+        fetchProducts(page === 0);
+    }, [page, search, category, condition, minPrice, maxPrice]);
+
+    const fetchProducts = async (reset = false) => {
+        setLoading(true);
+        try {
             const params = new URLSearchParams()
             if (search) params.append("search", search)
             if (category) params.append("category", category)
@@ -32,21 +39,28 @@ function Home() {
             if (minPrice) params.append("minPrice", minPrice)
             if (maxPrice) params.append("maxPrice", maxPrice)
 
-            console.log("Fetching with:", params.toString())
+            params.append("page", page);
+            params.append("size", 9);
 
-            const res = await axios.get(
-                `http://localhost:8080/api/products?${params.toString()}`
-            )
-            setProducts(res.data)
-            } catch {
+            const res = await AxiosHelper.get(`/products?${params.toString()}`);
+            setProducts(prev =>
+                reset ? res.data.content : [...prev, ...res.data.content]
+            );
+            setLast(res.data.last);
+            console.log("Page:", reset ? 0 : page, "Received:", res.data.content.length);
+            setError(null);
+        } catch(e) {
             setError("Could not load products")
-            } finally {
+        } finally {
             setLoading(false)
-            }
         }
+    };
 
-        fetchProducts()
-    }, [search, category, condition, minPrice, maxPrice])
+    useEffect(() => {
+        setProducts([]);
+        setLast(false);
+        setPage(0);
+    }, [search, category, condition, minPrice, maxPrice]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -89,7 +103,7 @@ function Home() {
                     </div>
 
                     <div className="flex gap-2">
-                        <button type="button" className="text-sm" onClick={()=>{setSearch(''); setCategory(''); setCondition(''); setMinPrice(''); setMaxPrice('')}}>Reset</button>
+                        <button type="button" className="text-sm" onClick={()=>{nav('/'); setCategory(''); setCondition(''); setMinPrice(''); setMaxPrice('')}}>Reset</button>
                     </div>
                 </form>
             </aside>
@@ -103,16 +117,22 @@ function Home() {
                 </div>
 
 
-                {loading ? (
-                <div>Loading products...</div>
-                ) : error ? (
-                    <div className="text-red-500">{error}</div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {products.map(p => <ProductCard key={p.id} product={p} />)}
-                    </div>
+                {loading && <div>Loading products...</div>}
+                {error && <div className="text-red-500 mb-2">{error}</div>}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {products.map(p => <ProductCard key={p.id} product={p} />)}
+                </div>
+                {!last && (
+                    <button
+                        className="btn-secondary mt-4"
+                        disabled={loading}
+                        onClick={() => setPage(p => p + 1)}
+                    >
+                        {loading ? "Loading..." : "Load more listings"}
+                    </button>
                 )}
             </section>
+            
         </div>
     )
 }

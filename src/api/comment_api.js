@@ -1,8 +1,10 @@
 import AxiosHelper from "./axios_helper.js";
 
 const CommentAPI = {
-  fetchComments: async (productId) => {
-    const res = await AxiosHelper.get(`/products/${productId}/comments`);
+  fetchComments: async (productId, page = 0, size = 5) => {
+    const res = await AxiosHelper.get(
+      `/products/${productId}/comments?page=${page}&size=${size}`
+    );
     return res.data;
   },
 
