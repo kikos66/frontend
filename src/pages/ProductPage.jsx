@@ -12,11 +12,11 @@ export default function ProductPage(){
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [files, setFiles] = useState([])
+  const [comments, setComments] = useState([])
   const { currentUser, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
   const isOwner = isAuthenticated && currentUser?.id === product?.owner?.id
-  const isModerator = currentUser && (currentUser.role === "ROLE_MODERATOR" || currentUser.role === "ROLE_ADMIN");
 
   useEffect(() => {
     (async () => {
@@ -87,7 +87,7 @@ export default function ProductPage(){
 
         </div>
 
-        {(isOwner || isModerator) && (
+        {isOwner && (
           <div className="p-4">
             <button
               className="bg-red-600 text-white px-4 py-2 rounded mb-2"

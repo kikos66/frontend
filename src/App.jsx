@@ -13,11 +13,26 @@ import { CartProvider } from './context/CartContext'
 import AddListing from './pages/AddListing'
 import useAuth from './hooks/useAuth'
 import ProductPage from './pages/ProductPage'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import ManageUsers from './pages/admin/ManageUsers'
+import ManageListings from './pages/admin/ManageListings'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth()
 
   return isAuthenticated ? children : <Navigate to="/login" />
+}
+
+function RequireAdmin({ children }) {
+  const { currentUser } = useAuth()
+
+  const isAdmin = (() => {
+    if (!currentUser) return false;
+    const role = (currentUser.role || '').toString().toUpperCase();
+    return role === 'ADMIN' || role === 'ROLE_ADMIN' || role.includes('ADMIN');
+  })()
+
+  return isAdmin ? children : <Navigate to="/" />;
 }
 
 function App() {
@@ -43,6 +58,31 @@ function App() {
                     <ProtectedRoute>
                       <AddListing />
                     </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/admin"
+                  element={
+                    <RequireAdmin>
+                      <AdminDashboard />
+                    </RequireAdmin>
+                  }
+                />
+                <Route
+                  path="/admin/users"
+                  element={
+                    <RequireAdmin>
+                      <ManageUsers />
+                    </RequireAdmin>
+                  }
+                />
+                <Route
+                  path="/admin/listings"
+                  element={
+                    <RequireAdmin>
+                      <ManageListings />
+                    </RequireAdmin>
                   }
                 />
               </Routes>

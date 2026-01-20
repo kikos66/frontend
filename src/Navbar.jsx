@@ -199,6 +199,13 @@ const Navbar = () => {
               <span className="text-sm">Cart ({cart.length})</span>
             </Link>
 
+            {currentUser && (() => {
+              const r = (currentUser.role || '').toString().toUpperCase();
+              return (r === 'ADMIN' || r === 'ROLE_ADMIN' || r.includes('ADMIN'));
+            })() && (
+              <NavLink to="/admin" className="button-navbar">Admin</NavLink>
+            )}
+
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
                 <Link to="/profile" className="hidden md:flex items-center space-x-2 button-navbar">
