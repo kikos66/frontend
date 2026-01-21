@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import AxiosHelper from '../api/axios_helper'
 import useAuth from '../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
 import CommentAPI from '../api/comment_api';
 import CommentList from '../Components/CommentList';
 
@@ -13,16 +14,21 @@ export default function ProductPage(){
   const [error, setError] = useState(null)
   const [files, setFiles] = useState([])
   const [comments, setComments] = useState([])
+  const { addToCart } = useCart()
   const { currentUser, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
   const isOwner = isAuthenticated && currentUser?.id === product?.owner?.id
+
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   useEffect(() => {
     (async () => {
       try {
         const res = await AxiosHelper.get(`/products/${id}`);
         setProduct(res.data);
+        setSelectedIndex(0);
       } catch (e) {
         setError('Product not found');
       } finally {
@@ -49,64 +55,177 @@ export default function ProductPage(){
   }
 
   const upload = async () => {
-    if(files.length===0) return
-    const fd = new FormData()
-    files.forEach(f => fd.append('images', f))
+    if(files.length===0) return;
+    const fd = new FormData();
+    files.forEach(f => fd.append('images', f));
     try {
       const res = await AxiosHelper.post(`/products/${id}/images`, fd, { headers: {'Content-Type': 'multipart/form-data'} })
-      setProduct(res.data)
-      setFiles([])
+      setProduct(res.data);
+      setFiles([]);
+      setSelectedIndex(0);
     } catch(e) {
-      alert('Upload failed: ' + (e.response?.data || e.message))
+      alert('Upload failed: ' + (e.response?.data || e.message));
     }
   }
 
+  const handleDeleteProduct = async () => {
+    if (!confirm("Delete this product?")) return;
+    try {
+      await AxiosHelper.delete(`/products/${product.id}`);
+      navigate('/');
+    } catch (e) {
+      alert('Delete failed');
+      console.error(e);
+    }
+  }
+
+  const onAddToCart = () => {
+    if (!product) return;
+    addToCart(product);
+    alert('Added to cart');
+  }
+
+  const images = product?.images || []
+
+  const prevImage = () => setSelectedIndex(i => Math.max(0, i - 1))
+  const nextImage = () => setSelectedIndex(i => Math.min(images.length - 1, i + 1))
+  const openLightbox = (index) => { setSelectedIndex(index); setLightboxOpen(true) }
+
   if(loading) return <div>Loading...</div>
   if(error) return <div>{error}</div>
-
-  const images = product.images || []
   return (
     <div className="card">
-      <h1 className="text-2xl font-bold mb-3">{product.name}</h1>
-      <div className="grid md:grid-cols-4 gap-4">
-        <div className="md:col-span-3">
-          {images.length ? (
-            <img src={`/images/products/${images[0].filename}`} alt={product.name} className="w-full h-96 object-cover mb-3" />
-          ) : (
-            <div className="h-96 bg-gray-100 flex items-center justify-center mb-3">No image</div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold">{product.name}</h1>
+          {product.owner && (
+            <Link to={`/profile/${product.owner.id}`} className="flex items-center gap-3">
+              <img
+                src={product.owner.profilePicture ? `/images/profiles/${product.owner.profilePicture}` : "/placeholder.png"}
+                alt={product.owner.username}
+                className="w-10 h-10 rounded-full object-cover border"
+                title={`View ${product.owner.username}`}
+              />
+              <div className="text-sm text-gray-700">{product.owner.username}</div>
+            </Link>
           )}
-          <div className="flex space-x-2">
-            {images.map(img => (
-              <img key={img.id} src={`/images/products/${img.filename}`} alt="" className="w-24 h-24 object-cover" />
-            ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* owner shouldn't add their own product to cart */}
+          {!isOwner && (
+            <button onClick={onAddToCart} className="btn-primary">
+              Add to cart
+            </button>
+          )}
+          {isOwner && (
+            <button onClick={handleDeleteProduct} className="bg-red-600 text-white px-4 py-2 rounded">
+              Delete Listing
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-4 gap-4">
+        {/* gallery + description */}
+        <div className="md:col-span-3">
+          {/* main image area */}
+          <div className="relative mb-3 bg-gray-100 h-96 flex items-center justify-center overflow-hidden">
+            {images.length ? (
+              <>
+                <img
+                  src={`/images/products/${images[selectedIndex].filename}`}
+                  alt={product.name}
+                  className="w-full h-full object-contain cursor-zoom-in"
+                  onClick={() => openLightbox(selectedIndex)}
+                />
+
+                {/* prev/next */}
+                <button
+                  onClick={prevImage}
+                  disabled={selectedIndex === 0}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow"
+                  aria-label="Previous"
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={nextImage}
+                  disabled={selectedIndex === images.length - 1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow"
+                  aria-label="Next"
+                >
+                  ›
+                </button>
+              </>
+            ) : (
+              <div className="h-full w-full flex items-center justify-center text-gray-500">No image</div>
+            )}
           </div>
+
+          {/* thumbnails */}
+          {images.length > 1 && (
+            <div className="flex gap-2 mb-3">
+              {images.map((img, idx) => (
+                <button
+                  key={img.id}
+                  onClick={() => setSelectedIndex(idx)}
+                  className={`w-20 h-20 overflow-hidden rounded border ${idx === selectedIndex ? 'ring-2 ring-offset-2 ring-army-600' : 'border-gray-200'}`}
+                >
+                  <img src={`/images/products/${img.filename}`} alt={`thumb-${idx}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+
           <p className="mt-3">{product.description}</p>
           <div className="font-bold text-xl mb-4">€{product.price?.toFixed(2)}</div>
 
           <CommentList productId={product.id} currentUser={currentUser} />
-
         </div>
 
-        {isOwner && (
-          <div className="p-4">
-            <button
-              className="bg-red-600 text-white px-4 py-2 rounded mb-2"
-              onClick={async () => {
-                if (!confirm("Delete this product?")) return;
-                await AxiosHelper.delete(`/products/${product.id}`);
-                navigate('/');
-              }}
-            >
-              Delete Listing
-            </button>
-            <label className="label">Add photos (max 5 total)</label>
-            <input type="file" accept="image/*" multiple onChange={handleFiles} />
-            <div className="mt-2">
-              <button className="btn-primary mr-2" onClick={upload}>Upload</button>
-            </div>
+        {/* right column: meta + upload (owner) */}
+        <div className="p-4">
+          <div className="mb-4">
+            <div className="text-sm text-gray-500">Category</div>
+            <div className="font-medium">{product.category}</div>
           </div>
-        )}
+
+          <div className="mb-4">
+            <div className="text-sm text-gray-500">Condition</div>
+            <div className="font-medium">{product.condition}</div>
+          </div>
+
+          <div className="mb-4">
+            <div className="text-sm text-gray-500">Seller</div>
+            <div className="font-medium">{product.owner?.username}</div>
+          </div>
+
+          {isOwner && (
+            <>
+              <label className="label">Add photos (max 5 total)</label>
+              <input type="file" accept="image/*" multiple onChange={handleFiles} />
+              <div className="mt-2">
+                <button className="btn-primary mr-2" onClick={upload}>Upload</button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
+
+      {/* simple lightbox */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <img
+            src={`/images/products/${images[selectedIndex].filename}`}
+            alt="lightbox"
+            className="max-h-full max-w-full object-contain"
+          />
+        </div>
+      )}
     </div>
   )
 }

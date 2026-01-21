@@ -4,9 +4,12 @@ import UserAPI from '../api/user_api';
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from 'react-router-dom';
 import AxiosHelper from '../api/axios_helper';
+import ReviewAPI from '../api/review_api';
+import ReviewList from '../Components/ReviewList';
+import ReviewForm from '../Components/ReviewForm';
 
 function Profile() {
-    const {isAuthenticated, updateUser, fetchCurrentUser, logout} = useAuth(); 
+    const {isAuthenticated, updateUser, fetchCurrentUser, logout, currentUser} = useAuth(); 
     const navigate = useNavigate();
     useEffect(() => {
         if (!isAuthenticated) {
@@ -15,12 +18,17 @@ function Profile() {
     }, [isAuthenticated, navigate]);
 
     const { id } = useParams(); 
+    const userIdToFetch = id || null;
     
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [avatarFile, setAvatarFile] = useState(null);
     const [myListings, setMyListings] = useState([]);
+
+    const [reviews, setReviews] = useState([]);
+    const [ratingSummary, setRatingSummary] = useState({ average: 0, count: 0 });
+    const isOwnProfile = !userIdToFetch || Number(userIdToFetch) === currentUser?.id;
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
@@ -54,16 +62,21 @@ function Profile() {
         }
     };
 
-    const userIdToFetch = id || null;
+    
 
     useEffect(() => {
-        const fetchMyListings = async () => {
-            const res = await AxiosHelper.get("/products/mine");
+        const fetchListings = async () => {
+            const url = isOwnProfile
+            ? "/products/mine"
+            : `/products/user/${userIdToFetch}`;
+
+            const res = await AxiosHelper.get(url);
             setMyListings(res.data);
         };
-        fetchMyListings();
-    }, []);
 
+        fetchListings();
+    }, [isOwnProfile, userIdToFetch]);
+    
     useEffect(() => {
         const fetchUser = async () => {
             setLoading(true);
@@ -71,6 +84,14 @@ function Profile() {
             try {
                 const data = await UserAPI.getUserData(userIdToFetch); 
                 setUser(data);
+
+                const [r, s] = await Promise.allSettled([
+                ReviewAPI.fetchReviews(data.id),
+                ReviewAPI.fetchRating(data.id)
+                ]);
+
+                if (r.status === 'fulfilled') setReviews(r.value);
+                if (s.status === 'fulfilled') setRatingSummary(s.value || { average: 0, count: 0 });
             } catch (err) {
                 setError(`Failed to load profile for ${userIdToFetch || 'current user'}.`);
                 setUser(null);
@@ -91,6 +112,19 @@ function Profile() {
             ...formData,
             [e.target.name]: e.target.value
         });
+    };
+
+    const onReviewPosted = async (savedReview) => {
+        try {
+        const [r, s] = await Promise.all([
+            ReviewAPI.fetchReviews(user.id),
+            ReviewAPI.fetchRating(user.id)
+        ]);
+        setReviews(r);
+        setRatingSummary(s);
+        } catch (e) {
+        console.error("Failed to refresh reviews", e);
+        }
     };
 
     const handleEdit = async (e) => {
@@ -138,57 +172,90 @@ function Profile() {
             <div className="mt-4">
                 <label className="label">Profile picture</label>
                 <div className="flex items-center gap-3">
-                    <img src={user?.profilePicture ? `/images/profiles/${user.profilePicture}?t=${Date.now()}` : '/placeholder.png'} alt="avatar" className="w-16 h-16 object-cover rounded-full" />
+                    <img
+                    src={user?.profilePicture
+                        ? `/images/profiles/${user.profilePicture}?t=${Date.now()}`
+                        : '/placeholder.png'}
+                    alt="avatar"
+                    className="w-16 h-16 object-cover rounded-full"
+                    />
+
+                    {isOwnProfile && (
                     <div>
-                    <input type="file" accept="image/*" onChange={handleAvatarChange} />
-                    <button
+                        <input type="file" accept="image/*" onChange={handleAvatarChange} />
+                        <button
                         type="button"
                         onClick={uploadAvatar}
                         className="my-button mt-2"
-                    >
+                        >
                         Upload avatar
-                    </button>
+                        </button>
+                    </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="flex items-center justify-between mt-4">
+                <h1 className="text-3xl font-bold mb-6 text-green-600">
+                    {userIdToFetch ? `Profile for ${user.username}` : 'Your Profile'}
+                </h1>
+                <div className="text-right">
+                    <div className="text-sm text-gray-500">Rating</div>
+                    <div className="font-bold">{ratingSummary.average.toFixed(2)} ★
+                        <span className="text-xs text-gray-500">({ratingSummary.count})</span>
                     </div>
                 </div>
             </div>
-            <h1 className="text-3xl font-bold mb-6 text-green-600">
-                {userIdToFetch ? `Profile for User ID: ${userIdToFetch}` : 'Your Profile'}
-            </h1>
             <p className="text-lg">
                 <strong>Email:</strong> {user?.email}
             </p>
-            {!userIdToFetch && (
-                <div>
-                    <form onSubmit={handleEdit}>
-                        <input  value={formData.email} onChange={handleChange}
-                            id="email" type="email" name="email" placeholder="Update email" required
-                            className="w-full p-2 border border-gray-300 rounded-md mb-4"
-                        />
-                        <button type="submit" 
-                            className="my-button">
-                            Edit Profile
-                        </button>
-                    </form>
-                    <form onSubmit={handleDelete}>
-                        <button type="submit"
-                            className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition margin-top">
-                            Delete
-                        </button>
-                    </form>
+            {isOwnProfile && (
+                <form onSubmit={handleEdit} className="mt-4">
+                    <label className="label">Change email</label>
+                    <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="New email"
+                    className="input w-full"
+                    required
+                    />
+                    <button type="submit" className="my-button mt-2">
+                    Save changes
+                    </button>
+                </form>
+            )}
+
+            {!isOwnProfile && (
+                <div className="mt-4">
+                <h3 className="font-semibold mb-2">Leave a review</h3>
+                <ReviewForm targetUserId={user.id} onPosted={onReviewPosted}
+                    initial={reviews.find(r => r.author?.id === currentUser?.id)} />
                 </div>
             )}
-            <h2 className="text-xl font-semibold mt-6">My Listings</h2>
+
+            <div className="mt-6">
+                <h2 className="text-xl font-semibold">Reviews</h2>
+                <div className="mt-3">
+                <ReviewList reviews={reviews} />
+                </div>
+            </div>
+
+            <h2 className="text-xl font-semibold mt-6">
+                {isOwnProfile ? 'My Listings' : `${user.username}'s Listings`}
+            </h2>
 
             <div className="grid grid-cols-2 gap-4 mt-3">
                 {myListings.map(p => (
                     <div
-                    key={p.id}
-                    className="border rounded p-2 cursor-pointer hover:shadow"
-                    onClick={() => navigate(`/products/${p.id}`)}
+                        key={p.id}
+                        className="border rounded p-2 cursor-pointer hover:shadow"
+                        onClick={() => navigate(`/products/${p.id}`)}
                     >
                     <img
                         src={
-                        p.images?.length
+                            p.images?.length
                             ? `http://localhost:8080/images/products/${p.images[0].filename}`
                             : "/placeholder.png"
                         }
@@ -198,6 +265,17 @@ function Profile() {
                     </div>
                 ))}
             </div>
+
+            {isOwnProfile && (
+                <div className="mt-6 border-t pt-4">
+                    <button
+                    onClick={handleDelete}
+                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                    Delete Profile
+                    </button>
+                </div>
+            )}
         </div>
     );
     
