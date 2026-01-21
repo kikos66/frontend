@@ -233,6 +233,10 @@ export default function ProductPage(){
               <div className="mt-2">
                 <button className="btn-primary mr-2" onClick={upload}>Upload</button>
               </div>
+              <div className="mt-2">
+                <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                  onClick={handleDeleteProduct}>Delete</button>
+              </div>
             </>
           )}
         </div>

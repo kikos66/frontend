@@ -16,6 +16,8 @@ import ProductPage from './pages/ProductPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ManageUsers from './pages/admin/ManageUsers'
 import ManageListings from './pages/admin/ManageListings'
+import PurchaseHistory from './pages/PurchaseHistory'
+import SalesHistory from './pages/SalesHistory'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth()
@@ -57,6 +59,22 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <AddListing />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route path="/orders"
+                  element={
+                    <ProtectedRoute>
+                      <PurchaseHistory />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route path="/sales"
+                  element={
+                    <ProtectedRoute>
+                      <SalesHistory />
                     </ProtectedRoute>
                   }
                 />

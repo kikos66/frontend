@@ -139,9 +139,13 @@ const Navbar = () => {
             <div className="hidden md:flex items-center space-x-3">
               <NavLink to="/" className="button-navbar" end>Home</NavLink>
               {isAuthenticated && (
-                <NavLink to="/add-listing" className="button-navbar flex items-center gap-1">
-                <Plus size={16}/> Add Listing
-                </NavLink>
+                <>
+                  <NavLink to="/add-listing" className="button-navbar flex items-center gap-1">
+                  <Plus size={16}/> Add Listing
+                  </NavLink>
+                  <NavLink to="/orders" className="button-navbar">My Orders</NavLink>
+                  <NavLink to="/sales" className="button-navbar">My Sales</NavLink>
+                </>
               )}
             </div>
 
