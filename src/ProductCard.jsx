@@ -15,10 +15,18 @@ export default function ProductCard({ product }){
             <h3 className="font-semibold">{product.name}</h3>
             <p className="text-sm text-gray-600">{product.description}</p>
             <div className="mt-3 flex items-center justify-between">
+                {product.quantity !== undefined && (
+                    <div className="text-xs text-gray-500">Stock: {product.quantity}</div>
+                )}
                 <div className="font-bold">€{product.price?.toFixed?.(2) ?? '—'}</div>
                 <div className="flex space-x-2">
                     <Link to={`/products/${product.id}`} className="text-sm underline">Details</Link>
-                    <button className="btn-primary text-sm" onClick={()=>addToCart(product)}>Add</button>
+                    <button
+                        className="btn-primary text-sm"
+                        onClick={() => addToCart(product, 1)}
+                        >
+                        Add
+                    </button>
                 </div>
             </div>
         </div>

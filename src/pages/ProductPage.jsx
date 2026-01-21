@@ -17,6 +17,7 @@ export default function ProductPage(){
   const { addToCart } = useCart()
   const { currentUser, isAuthenticated } = useAuth()
   const navigate = useNavigate()
+  const [selectedQty, setSelectedQty] = useState(1);
 
   const isOwner = isAuthenticated && currentUser?.id === product?.owner?.id
 
@@ -111,17 +112,41 @@ export default function ProductPage(){
           )}
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* owner shouldn't add their own product to cart */}
-          {!isOwner && (
-            <button onClick={onAddToCart} className="btn-primary">
+        <div className="font-bold text-xl mb-4">€{product.price?.toFixed(2)}</div>
+
+        {/* Stock & add-to-cart */}
+        <div className="flex items-center gap-4 mb-4">
+          <div>
+            <div className="text-sm text-gray-600">In stock</div>
+            <div className="font-medium">{product.quantity ?? 0}</div>
+          </div>
+
+          {!isOwner && (product.quantity ?? 0) > 0 && (
+            <div className="flex items-center gap-2">
+              <label className="label">Qty</label>
+              <select
+                className="input-field"
+                value={selectedQty}
+                onChange={(e) => setSelectedQty(Number(e.target.value))}
+              >
+                {Array.from({ length: Math.min(product.quantity ?? 0, 10) }, (_, i) => i + 1)
+                  .map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+
+              <button
+                className="btn-primary ml-2"
+                onClick={() => {
+                  addToCart(product, selectedQty);
+                  alert('Added to cart');
+                }}
+              >
               Add to cart
             </button>
+            </div>
           )}
-          {isOwner && (
-            <button onClick={handleDeleteProduct} className="bg-red-600 text-white px-4 py-2 rounded">
-              Delete Listing
-            </button>
+
+          {(!isOwner && (product.quantity ?? 0) === 0) && (
+            <div className="text-red-600">Out of stock</div>
           )}
         </div>
       </div>

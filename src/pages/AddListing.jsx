@@ -8,6 +8,7 @@ export default function AddListing(){
     name: '',
     description: '',
     price: '',
+    quantity: '',
     category: 'jackets',
     condition: 'new'
 })
@@ -34,6 +35,7 @@ const handleSubmit = async (e) => {
         formData.append('name', form.name);
         formData.append('description', form.description);
         formData.append('price', Number(form.price));
+        formData.append('quantity', Number(form.quantity));
         formData.append('category', form.category);
         formData.append('condition', form.condition);
         files.forEach((file) => {
@@ -75,6 +77,11 @@ return (
             <div>
                 <label className="label">Price</label>
                 <input type="number" min="0" step="0.01" name="price" value={form.price} onChange={handleChange} required className="input-field w-full" />
+            </div>
+
+            <div>
+                <label className="label">Quantity</label>
+                <input type="number" name="quantity" min="0" value={form.quantity} onChange={handleChange} className="input-field w-full" />
             </div>
 
             <div className="flex gap-3">

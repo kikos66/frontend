@@ -10,7 +10,7 @@ export default function ManageListings() {
   useEffect(()=> {
     (async ()=> {
       const res = await AxiosHelper.get("/products");
-      setListings(res.data);
+      setListings(res.data.content);
     })();
   },[]);
 
@@ -22,7 +22,7 @@ export default function ManageListings() {
 
   const filteredListings = listings.filter(l =>
     l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    l.owner?.username.toLowerCase().includes(searchTerm.toLowerCase())
+    (l.owner?.username || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -30,13 +30,13 @@ export default function ManageListings() {
       <h1 className="text-xl font-bold mb-3">Manage Listings</h1>
       <input
         type="text"
-        placeholder="Search by name or owner..."
+        placeholder="Search by name of the product..."
         value={searchTerm}
         onChange={e => setSearchTerm(e.target.value)}
         className="input-field w-full border p-2 rounded mb-4"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {listings.map(p => (
+        {filteredListings.map(p => (
           <div key={p.id} className="border rounded p-3">
             <div className="font-medium">{p.name}</div>
             <div className="text-sm text-gray-500">{p.category} · €{p.price}</div>
