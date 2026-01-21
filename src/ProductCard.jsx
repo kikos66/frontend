@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 import { useCart } from './context/CartContext'
 
 export default function ProductCard({ product }){
-    const thumbnailUrl  = product.images && product.images.length ? `/images/products/${product.images[0].filename}` : '/placeholder.png';
+    const thumbnailUrl  = product.images && product.images.length ?
+     `/images/products/${product.images[0].filename}` : "/placeholder_image.png";
     const { addToCart } = useCart()
     return (
         <div className="card">

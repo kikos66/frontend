@@ -31,7 +31,7 @@ const Navbar = () => {
     debounceRef.current = setTimeout(async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/products/suggest?q=${searchQuery}`
+          `/api/products/suggest?q=${searchQuery}`
         )
         setSuggestions(res.data);
         setShowSuggestions(true);
@@ -39,7 +39,13 @@ const Navbar = () => {
       } catch {}
     }, 250)
   }, [searchQuery]);
-
+  
+  const isAdmin =
+    currentUser &&
+    ["ADMIN", "ROLE_ADMIN"].includes(
+      (currentUser.role || "").toUpperCase()
+    );
+  
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -99,8 +105,8 @@ const Navbar = () => {
 
   const thumbnail = (p) =>
     p.images?.length
-      ? `http://localhost:8080/images/products/${p.images[0].filename}`
-      : "/placeholder.png";
+      ? `/images/products/${p.images[0].filename}`
+      : "/placeholder_image.png";
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -137,7 +143,6 @@ const Navbar = () => {
 
 
             <div className="hidden md:flex items-center space-x-3">
-              <NavLink to="/" className="button-navbar" end>Home</NavLink>
               {isAuthenticated && (
                 <>
                   <NavLink to="/add-listing" className="button-navbar flex items-center gap-1">
@@ -153,7 +158,7 @@ const Navbar = () => {
           </div>
 
           {/* Center */}
-          <div className="flex-1 max-w-2xl mx-4" ref={containerRef}>
+          <div className="hidden md:block flex-1 max-w-2xl mx-4" ref={containerRef}>
             <form onSubmit={handleSearch} onKeyDown={handleKeyDown} className="relative overflow-visible">
               <input
                 type="text"
@@ -197,21 +202,16 @@ const Navbar = () => {
           </div>
 
           {/* Right side*/}
-          <div className="flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-6">
             <Link to="/cart" className="flex items-center space-x-2">
               <ShoppingCart size={18} />
               <span className="text-sm">Cart ({cart.length})</span>
             </Link>
 
-            {currentUser && (() => {
-              const r = (currentUser.role || '').toString().toUpperCase();
-              return (r === 'ADMIN' || r === 'ROLE_ADMIN' || r.includes('ADMIN'));
-            })() && (
-              <NavLink to="/admin" className="button-navbar">Admin</NavLink>
-            )}
+            {isAdmin && <NavLink to="/admin" className="button-navbar">Admin</NavLink>}
 
             {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-4">
                 <Link to="/profile" className="hidden md:flex items-center space-x-2 button-navbar">
                   <User size={18} />
                   <span>{currentUser?.username || 'Profile'}</span>
@@ -229,15 +229,59 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t pt-4">
-            <div className="flex flex-col space-y-3">
-              <NavLink to="/" className="button-navbar-mobile">Home</NavLink>
-              {isAuthenticated ? (
-                <button className="button-navbar-mobile" onClick={handleLogout}>Logout</button>
-                ) : (
-                <NavLink to="/login" className="button-navbar-mobile">Login</NavLink>
-              )}
-            </div>
+          <div className="md:hidden border-t bg-white px-4 py-4 space-y-4">
+            {/* Mobile Search */}
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products..."
+                className="w-full px-4 py-2 pl-10 border rounded-lg bg-gray-50"
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            </form>
+
+            {isAuthenticated && (
+              <>
+                <NavLink to="/add-listing" onClick={() => setIsMenuOpen(false)} className="button-navbar-mobile w-full flex items-center gap-3">
+                  <Plus size={16}/> Add Listing
+                </NavLink>
+                <NavLink to="/orders" onClick={() => setIsMenuOpen(false)} className="button-navbar-mobile w-full flex items-center gap-3">
+                  My Orders
+                </NavLink>
+                <NavLink to="/sales" onClick={() => setIsMenuOpen(false)} className="button-navbar-mobile w-full flex items-center gap-3">
+                  My Sales
+                </NavLink>
+              </>
+            )}
+
+            <NavLink to="/cart" onClick={() => setIsMenuOpen(false)} className="button-navbar-mobile w-full flex items-center gap-3">
+              <ShoppingCart size={18} /> Cart ({cart.length})
+            </NavLink>
+
+            {isAdmin && (
+              <NavLink to="/admin" onClick={() => setIsMenuOpen(false)} className="button-navbar-mobile w-full flex items-center gap-3">
+                Admin
+              </NavLink>
+            )}
+
+            {isAuthenticated ? (
+              <>
+                <NavLink to="/profile" onClick={() => setIsMenuOpen(false)} className="button-navbar-mobile w-full flex items-center gap-3">
+                  <User size={18} /> Profile
+                </NavLink>
+                <button onClick={handleLogout} className="button-navbar-mobile text-red-600 w-full flex items-center gap-3">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink to="/login" className="button-navbar-mobile w-full flex items-center gap-3">Login</NavLink>
+                <NavLink to="/register" className="btn-primary block text-center w-full flex items-center gap-3">
+                  Sign up
+                </NavLink>
+              </>
+            )}
           </div>
         )}
       </div>

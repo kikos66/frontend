@@ -104,7 +104,9 @@ function Profile() {
     }, [userIdToFetch]); 
 
     const [formData, setFormData] = useState({
-            email: ''
+        email: '',
+        username: '',
+        password: ''
     });
 
     const handleChange = (e) => {
@@ -133,20 +135,15 @@ function Profile() {
 
         try {
             const res = await UserAPI.editUserData(formData);
-            if(res.status == "201") {
-                if (res && res.accessToken) {
-                    localStorage.setItem("accessToken", res.accessToken);
-                }
-
-                updateUser(res.user);
+            if(res.status === 201 || res.status === 200) {
+                updateUser(res.data.user); 
                 await fetchCurrentUser();
-                setUser(res.user); 
-                setFormData({ email: '' });
+                setUser(res.data.user); 
+                setFormData({ email: '', username: '', password: '' });
             }
-            
         } catch (e) {
             console.error("Profile edit failed:", e);
-            setError("Invalid form data or failed to update profile.");
+            setError(e.response?.data?.message || "Invalid form data or failed to update profile.");
         }
     };
 
@@ -206,23 +203,48 @@ function Profile() {
                     </div>
                 </div>
             </div>
-            <p className="text-lg">
-                <strong>Email:</strong> {user?.email}
-            </p>
+            <div className="text-lg space-y-1">
+                <div>
+                    <strong>Email:</strong> {user?.email}
+                </div>
+                <div>
+                    <strong>Username:</strong> {user?.username}
+                </div>
+            </div>
             {isOwnProfile && (
                 <form onSubmit={handleEdit} className="mt-4">
                     <label className="label">Change email</label>
                     <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="New email"
-                    className="input w-full"
-                    required
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="New email"
+                        className="input w-full"
                     />
+
+                    <label className="label mt-2">Change username</label>
+                    <input
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        placeholder="New username"
+                        className="input w-full"
+                    />
+
+                    <label className="label mt-2">Change password</label>
+                    <input
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="New password"
+                        className="input w-full"
+                    />
+
                     <button type="submit" className="my-button mt-2">
-                    Save changes
+                        Save changes
                     </button>
                 </form>
             )}
@@ -256,7 +278,7 @@ function Profile() {
                     <img
                         src={
                             p.images?.length
-                            ? `http://localhost:8080/images/products/${p.images[0].filename}`
+                            ? `/images/products/${p.images[0].filename}`
                             : "/placeholder.png"
                         }
                         className="h-32 w-full object-cover rounded"
