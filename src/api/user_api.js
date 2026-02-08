@@ -25,7 +25,7 @@ const UserAPI = {
         Authorization: `Bearer ${token}`
       }
     });
-    return res.data;
+    return res;
   },
   deleteUser: async () => {
     const token = localStorage.getItem("accessToken");

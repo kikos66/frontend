@@ -19,7 +19,7 @@ export default function CommentForm({ productId, onPosted }) {
   };
 
   if (!isAuthenticated) {
-    return <div className="text-sm text-gray-600">Log in to post a comment.</div>;
+    return <div className="muted-text">Log in to post a comment.</div>;
   }
 
   return (

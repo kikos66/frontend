@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ReviewList({ reviews }) {
   if (!reviews || reviews.length === 0) {
-    return <div className="text-gray-500">No reviews yet.</div>;
+    return <div className="muted-text">No reviews yet.</div>;
   }
 
   return (
@@ -17,7 +17,7 @@ export default function ReviewList({ reviews }) {
             />
             <div>
               <div className="font-medium">{r.author?.username}</div>
-              <div className="text-xs text-gray-500">{new Date(r.createdAt).toLocaleString()}</div>
+              <div className="muted-text">{new Date(r.createdAt).toLocaleString()}</div>
             </div>
             <div className="ml-auto text-sm font-semibold">{r.rating}★</div>
           </div>

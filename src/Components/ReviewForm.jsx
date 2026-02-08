@@ -16,11 +16,11 @@ export default function ReviewForm({ targetUserId, onPosted, initial }) {
   }, [initial]);
 
   if (!isAuthenticated) {
-    return <div className="text-sm text-gray-600">Log in to leave a review.</div>;
+    return <div className="muted-text">Log in to leave a review.</div>;
   }
 
   if (currentUser?.id === Number(targetUserId)) {
-    return <div className="text-sm text-gray-600">You can't review yourself.</div>;
+    return <div className="muted-text">You can't review yourself.</div>;
   }
 
   const submit = async (e) => {

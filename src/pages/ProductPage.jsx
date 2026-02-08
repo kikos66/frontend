@@ -107,23 +107,21 @@ export default function ProductPage(){
                 className="w-10 h-10 rounded-full object-cover border"
                 title={`View ${product.owner.username}`}
               />
-              <div className="text-sm text-gray-700">{product.owner.username}</div>
+              <div className="muted-text">{product.owner.username}</div>
             </Link>
           )}
         </div>
 
-        <div className="font-bold text-xl mb-4">€{product.price?.toFixed(2)}</div>
-
         {/* Stock & add-to-cart */}
         <div className="flex items-center gap-4 mb-4">
           <div>
-            <div className="text-sm text-gray-600">In stock</div>
+            <div className="muted-text">In stock</div>
             <div className="font-medium">{product.quantity ?? 0}</div>
           </div>
 
           {!isOwner && (product.quantity ?? 0) > 0 && (
             <div className="flex items-center gap-2">
-              <label className="label">Qty</label>
+              <label className="label">Quantity</label>
               <select
                 className="input-field"
                 value={selectedQty}
@@ -184,7 +182,11 @@ export default function ProductPage(){
                 </button>
               </>
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-gray-500">No image</div>
+              <img
+                src="/placeholder_image.png"
+                alt="No image available"
+                className="w-full h-full object-contain opacity-70"
+              />
             )}
           </div>
 
@@ -204,7 +206,7 @@ export default function ProductPage(){
           )}
 
           <p className="mt-3">{product.description}</p>
-          <div className="font-bold text-xl mb-4">€{product.price?.toFixed(2)}</div>
+          <div className="price-tag">€{product.price?.toFixed(2)}</div>
 
           <CommentList productId={product.id} currentUser={currentUser} />
         </div>
@@ -212,24 +214,24 @@ export default function ProductPage(){
         {/* right column: meta + upload (owner) */}
         <div className="p-4">
           <div className="mb-4">
-            <div className="text-sm text-gray-500">Category</div>
+            <div className="muted-text">Category</div>
             <div className="font-medium">{product.category}</div>
           </div>
 
           <div className="mb-4">
-            <div className="text-sm text-gray-500">Condition</div>
+            <div className="muted-text">Condition</div>
             <div className="font-medium">{product.condition}</div>
           </div>
 
           <div className="mb-4">
-            <div className="text-sm text-gray-500">Seller</div>
+            <div className="muted-text">Seller</div>
             <div className="font-medium">{product.owner?.username}</div>
           </div>
 
           {isOwner && (
             <>
               <label className="label">Add photos (max 5 total)</label>
-              <input type="file" accept="image/*" multiple onChange={handleFiles} />
+              <input className="link-muted" type="file" accept="image/*" multiple onChange={handleFiles} />
               <div className="mt-2">
                 <button className="btn-primary mr-2" onClick={upload}>Upload</button>
               </div>

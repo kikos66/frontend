@@ -35,7 +35,7 @@ export default function PurchaseHistory() {
               <div className="flex justify-between">
                 <div>
                   <div className="font-medium">Order #{o.id}</div>
-                  <div className="text-sm text-gray-500">{new Date(o.createdAt).toLocaleString()}</div>
+                  <div className="muted-text">{new Date(o.createdAt).toLocaleString()}</div>
                 </div>
                 <div className="font-bold">€{(o.total || 0).toFixed(2)}</div>
               </div>
@@ -43,10 +43,10 @@ export default function PurchaseHistory() {
                 {o.items.map(it => (
                   <div key={it.id} className="flex justify-between text-sm border-t pt-2 mt-2">
                     <div className="font-medium">{it.productName}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="muted-text">
                     Seller: {it.productOwnerName}
                 </div>
-                    <div>
+                    <div  className="price-tag">
                         {it.quantity} × €{it.productPrice.toFixed(2)} = €{it.subtotal.toFixed(2)}
                     </div>
                   </div>

@@ -121,8 +121,8 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow">
-      <div className="container mx-auto px-4 py-3">
+    <nav className="sticky top-0 z-50 bg-gradient-to-r from-[var(--army-700)] to-[var(--army-600)] shadow">
+      <div className="container mx-auto px-4 py-3 text-white">
         {/* Main Navbar */}
         <div className="flex items-center justify-between">
           
@@ -137,7 +137,9 @@ const Navbar = () => {
             </button>
 
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">MS</div>
+              <div className="w-10 h-10 rounded-full bg-white text-[var(--army-700)] flex items-center justify-center
+                font-bold shadow">MS
+              </div>
               <div className="hidden sm:block font-semibold">Surplus Depot</div>
             </Link>
 
@@ -165,13 +167,16 @@ const Navbar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products..."
-                className="w-full px-4 py-2 pl-10 pr-4 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                className="w-full px-4 py-2 pl-10 pr-4 bg-white text-gray-900 
+                  placeholder-gray-400 border border-gray-300 rounded-lg 
+                  focus:ring-2 focus:ring-[var(--army-500)] outline-none"
               />
 
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
 
               {showSuggestions && suggestions.length > 0 && (
-                <ul className="absolute z-50 top-full left-0 right-0 bg-white border rounded-lg shadow mt-1 overflow-auto max-h-80">
+                <ul className="absolute z-50 top-full left-0 right-0 bg-white border rounded-lg shadow mt-1
+                  overflow-auto max-h-80 text-black">
                   {suggestions.map((p, i) => (
                     <li
                       key={p.id}
@@ -186,18 +191,18 @@ const Navbar = () => {
                     >
                       <img
                         src={thumbnail(p)}
-                        className="w-10 h-10 object-cover rounded"
+                        className="avatar-sm rounded"
                       />
                       <div>
                         <div className="font-medium">{highlight(p.name)}</div>
-                        <div className="text-xs text-gray-500">{p.category}</div>
+                        <div className="chip">{p.category}</div>
                       </div>
                     </li>
                   ))}
                 </ul>
               )}
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm">Search</button>
+              <button type="submit" className="absolute right-2 top-1/2 transform text-gray-500 -translate-y-1/2 text-sm">Search</button>
             </form>
           </div>
 
@@ -205,7 +210,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/cart" className="flex items-center space-x-2">
               <ShoppingCart size={18} />
-              <span className="text-sm">Cart ({cart.length})</span>
+              <span className="badge">{cart.length}</span>
             </Link>
 
             {isAdmin && <NavLink to="/admin" className="button-navbar">Admin</NavLink>}
@@ -221,7 +226,7 @@ const Navbar = () => {
               ) : (
               <div className="flex items-center space-x-3">
                 <NavLink to="/login" className="button-navbar">Login</NavLink>
-                <NavLink to="/register" className="btn-primary">Sign up</NavLink>
+                <NavLink to="/register" className="button-navbar">Sign up</NavLink>
               </div>
             )}
           </div>
@@ -229,16 +234,45 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t bg-white px-4 py-4 space-y-4">
+          <div className="md:hidden border-t bg-white px-4 py-4 space-y-4 rounded mt-3">
             {/* Mobile Search */}
             <form onSubmit={handleSearch} className="relative">
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products..."
-                className="w-full px-4 py-2 pl-10 border rounded-lg bg-gray-50"
+                className="w-full px-4 py-2 pl-10 pr-4 bg-white text-gray-900 
+                            placeholder-gray-400 border border-gray-300 rounded-lg 
+                            focus:ring-2 focus:ring-[var(--army-500)] outline-none"
               />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              {showSuggestions && suggestions.length > 0 && (
+                <ul className="absolute z-50 top-full left-0 right-0 bg-white border rounded-lg shadow mt-1
+                  overflow-auto max-h-80 text-black">
+                  {suggestions.map((p, i) => (
+                    <li
+                      key={p.id}
+                      className={`flex items-center gap-3 px-4 py-2 cursor-pointer ${
+                        i === activeIndex ? "bg-gray-100" : ""
+                      }`}
+                      onMouseEnter={() => setActiveIndex(i)}
+                      onClick={() => {
+                        navigate(`/products/${p.id}`)
+                        setShowSuggestions(false)
+                      }}
+                    >
+                      <img
+                        src={thumbnail(p)}
+                        className="avatar-sm rounded"
+                      />
+                      <div>
+                        <div className="font-medium">{highlight(p.name)}</div>
+                        <div className="chip">{p.category}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </form>
 
             {isAuthenticated && (

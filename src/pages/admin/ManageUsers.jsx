@@ -49,7 +49,7 @@ export default function ManageUsers() {
           <div key={u.id} className="flex items-center justify-between p-2 border rounded">
             <div>
                 <div className="font-medium">{u.username} ({u.email})</div>
-                <div className="text-sm text-gray-500">Role: {u.role}</div>
+                <div className="muted-text">Role: {u.role}</div>
             </div>
             <div className="flex items-center gap-2">
               <select value={u.role} onChange={e => changeRole(u.id, e.target.value)}>

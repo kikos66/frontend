@@ -65,7 +65,7 @@ export default function CommentList({ productId, currentUser }) {
         <div>Loading comments...</div>
       )}
       {comments.length === 0 && !loading && (
-        <div className="text-gray-500 mt-2">No comments yet.</div>
+        <div className="muted-text">No comments yet.</div>
       )}
 
       <div className="space-y-3 mt-3">

@@ -29,7 +29,6 @@ function Profile() {
     const [reviews, setReviews] = useState([]);
     const [ratingSummary, setRatingSummary] = useState({ average: 0, count: 0 });
     const isOwnProfile = !userIdToFetch || Number(userIdToFetch) === currentUser?.id;
-
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         setAvatarFile(file);
@@ -133,9 +132,15 @@ function Profile() {
         e.preventDefault();
         setError("");
 
+        if (!user) {
+            setError("User not loaded yet.");
+            return;
+        }
+
         try {
             const res = await UserAPI.editUserData(formData);
             if(res.status === 201 || res.status === 200) {
+                localStorage.setItem("accessToken", res.data.accessToken);
                 updateUser(res.data.user); 
                 await fetchCurrentUser();
                 setUser(res.data.user); 
@@ -161,11 +166,18 @@ function Profile() {
         }
     }
 
+    const hasChanges = Boolean(
+        (formData.email && formData.email !== user?.email) ||
+        (formData.username && formData.username !== user?.username) ||
+        (formData.password && formData.password.length > 0)
+    );
+
+
     if (loading) return <div className="text-center mt-8">Loading profile...</div>;
     if (error) return <div className="text-red-500 text-center mt-8">{error}</div>;
 
     return (
-        <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+        <div className="card rounded-lg p-6 max-w-3xl mx-auto">
             <div className="mt-4">
                 <label className="label">Profile picture</label>
                 <div className="flex items-center gap-3">
@@ -179,7 +191,7 @@ function Profile() {
 
                     {isOwnProfile && (
                     <div>
-                        <input type="file" accept="image/*" onChange={handleAvatarChange} />
+                        <input className="link-muted" type="file" accept="image/*" onChange={handleAvatarChange} />
                         <button
                         type="button"
                         onClick={uploadAvatar}
@@ -197,9 +209,9 @@ function Profile() {
                     {userIdToFetch ? `Profile for ${user.username}` : 'Your Profile'}
                 </h1>
                 <div className="text-right">
-                    <div className="text-sm text-gray-500">Rating</div>
+                    <div className="muted-text">Rating</div>
                     <div className="font-bold">{ratingSummary.average.toFixed(2)} ★
-                        <span className="text-xs text-gray-500">({ratingSummary.count})</span>
+                        <span className="muted-text">({ratingSummary.count})</span>
                     </div>
                 </div>
             </div>
@@ -243,7 +255,7 @@ function Profile() {
                         className="input w-full"
                     />
 
-                    <button type="submit" className="my-button mt-2">
+                    <button type="submit" className="my-button mt-2" disabled={!hasChanges}>
                         Save changes
                     </button>
                 </form>
@@ -268,18 +280,18 @@ function Profile() {
                 {isOwnProfile ? 'My Listings' : `${user.username}'s Listings`}
             </h2>
 
-            <div className="grid grid-cols-2 gap-4 mt-3">
+            <div className="grid-3 mt-3">
                 {myListings.map(p => (
                     <div
                         key={p.id}
-                        className="border rounded p-2 cursor-pointer hover:shadow"
+                        className="card-compact cursor-pointer hover:shadow"
                         onClick={() => navigate(`/products/${p.id}`)}
                     >
                     <img
                         src={
                             p.images?.length
                             ? `/images/products/${p.images[0].filename}`
-                            : "/placeholder.png"
+                            : "/placeholder_image.png"
                         }
                         className="h-32 w-full object-cover rounded"
                     />

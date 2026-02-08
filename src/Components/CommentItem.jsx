@@ -28,7 +28,7 @@ export default function CommentItem({ comment, currentUser, onUpdate, onDelete }
     <div className="p-3 border rounded flex gap-3">
       <img src={comment.author?.profilePicture ? `/images/profiles/${comment.author.profilePicture}` : "/placeholder.png"} className="w-10 h-10 rounded-full object-cover" />
       <div className="flex-1">
-        <div className="text-sm font-medium">{comment.author?.username} <span className="text-xs text-gray-500 ml-2">{new Date(comment.createdAt).toLocaleString()}</span></div>
+        <div className="text-sm font-medium">{comment.author?.username} <span className="muted-text">{new Date(comment.createdAt).toLocaleString()}</span></div>
         {!editing ? <div className="mt-1">{comment.content}</div> :
           <div>
             <textarea className="input-field w-full" value={text} onChange={(e)=>setText(e.target.value)} />

@@ -39,7 +39,7 @@ export default function ManageListings() {
         {filteredListings.map(p => (
           <div key={p.id} className="border rounded p-3">
             <div className="font-medium">{p.name}</div>
-            <div className="text-sm text-gray-500">{p.category} · €{p.price}</div>
+            <div className="muted-text">{p.category} · €{p.price}</div>
             <div className="mt-2 flex gap-2">
               <button className="btn-primary" onClick={() => nav(`/products/${p.id}`)}>Open</button>
               <button className="bg-red-600 text-white px-3 py-1 rounded" onClick={() => deleteListing(p.id)}>Delete</button>

@@ -18,7 +18,6 @@ function Home() {
     const [page, setPage] = useState(0);
     const [last, setLast] = useState(false);
 
-
     // filters
     const [category, setCategory] = useState('')
     const [condition, setCondition] = useState('')
@@ -103,7 +102,9 @@ function Home() {
                     </div>
 
                     <div className="flex gap-2">
-                        <button type="button" className="text-sm" onClick={()=>{nav('/'); setCategory(''); setCondition(''); setMinPrice(''); setMaxPrice('')}}>Reset</button>
+                        <button type="button" className="link-muted"
+                            onClick={()=>{nav('/'); setCategory(''); setCondition(''); setMinPrice(''); setMaxPrice('')}}>Reset
+                        </button>
                     </div>
                 </form>
             </aside>
@@ -113,7 +114,7 @@ function Home() {
             <section className="md:col-span-3">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-2xl font-bold text-primary">Listings</h1>
-                    <div className="text-sm text-gray-600">{products.length} items</div>
+                    <div className="muted-text">{products.length} items</div>
                 </div>
 
 

@@ -7,12 +7,12 @@ export default function Footer(){
             <div className="container mx-auto px-4 py-6 flex items-center justify-between">
                 <div>
                     <strong>Surplus Depot</strong>
-                    <div className="text-sm text-gray-600">Quality military surplus since 2026</div>
+                    <div className="muted-text">Quality military surplus since 2026</div>
                 </div>
                 <div className="flex items-center space-x-4 text-sm">
-                    <Link to="/about">About Us</Link>
-                    <a href="#" onClick={(e)=>e.preventDefault()}>Support</a>
-                    <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a>
+                    <Link className="link-muted" to="/about">About Us</Link>
+                    <a className="link-muted" href="#" onClick={(e)=>e.preventDefault()}>Support</a>
+                    <a className="link-muted" href="#" onClick={(e)=>e.preventDefault()}>Terms</a>
                 </div>
             </div>
         </footer>

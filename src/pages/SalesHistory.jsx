@@ -35,7 +35,7 @@ export default function SalesHistory() {
                     <div className="flex justify-between mb-2">
                     <div>
                         <div className="font-medium">Order #{o.id}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="muted-text">
                         {new Date(o.createdAt).toLocaleString()}
                         </div>
                     </div>
@@ -46,7 +46,7 @@ export default function SalesHistory() {
                     <div key={it.id} className="text-sm border-t pt-2 mt-2 flex justify-between">
                         <div>
                         <div className="font-medium">{it.productName}</div>
-                        <div className="text-xs text-gray-500">
+                        <div className="price-tag">
                             Buyer paid: €{it.subtotal.toFixed(2)}
                         </div>
                         </div>
